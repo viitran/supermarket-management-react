@@ -7,7 +7,7 @@ function Header() {
   };
 
   const handleNavigateCart = () => {
-    navigate("/carts");
+    navigate("/cart");
   }
   
   return (

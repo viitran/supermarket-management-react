@@ -1,26 +1,36 @@
 // import Footer from "../Footer/Footer";
 import { useEffect, useState } from "react";
-import CarouselHome from "../Carousel/CarouselHome";
-import Footer from "../Footer/Footer";
-import Header from "../Header/Header";
-import { Button } from "react-bootstrap";
 import { getNewProduct } from "../../../services/product-service";
-import { NavLink, useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { getCategories } from "../../../services/categories-service";
+import CarouselHome from './../Carousel/CarouselHome';
 function Home() {
   const [products, setProducts] = useState();
+  const [category, setCategory] = useState();
   const navigate = useNavigate();
+
   const findNewProduct = async () => {
     getNewProduct().then((res) => {
       setProducts(res);
     });
   };
 
+  useEffect(() => {
+    const getNameCategory = async () => {
+      getCategories().then((res) => {
+        console.log(res);
+        setCategory(res);
+      });
+    };
+    getNameCategory();
+  }, []);
+
   const handleNavigateCate = () => {
     navigate("/collections");
   };
 
   const handleAddProductToCart = (id) => {
-    navigate(`/product/${id}`)
+    navigate(`/product/${id}`);
   };
 
   useEffect(() => {
@@ -33,7 +43,7 @@ function Home() {
     <>
       <CarouselHome />
       <div className="col-12 row p-3 text-center">
-        <div className="col-3">
+        <div className="col-lg-3 col-md-12 col-sm-12">
           <button className="button-cate" onClick={handleNavigateCate}>
             <img
               src="/img/HomePage/meat.png"
@@ -44,7 +54,7 @@ function Home() {
             Tươi sống
           </button>
         </div>
-        <div className="col-3">
+        <div className="col-lg-3 col-md-12 col-sm-12">
           <button className="button-cate">
             <img
               src="/img/HomePage/vegatable.png"
@@ -55,7 +65,7 @@ function Home() {
             Rau
           </button>
         </div>
-        <div className="col-3 text-center">
+        <div className="col-lg-3 col-md-12 col-sm-12 text-center">
           <button className="button-cate">
             <img
               src="/img/HomePage/nuoc.png"
@@ -66,7 +76,7 @@ function Home() {
             Nước
           </button>
         </div>
-        <div className="col-3">
+        <div className="col-lg-3 col-md-12 col-sm-12">
           <button className="button-cate">
             <img
               src="/img/HomePage/fruit.png"
@@ -79,7 +89,7 @@ function Home() {
         </div>
       </div>
       <div className="col-12 row">
-        <div className="col-12 p-5 ms-2">
+        <div className="col-lg-12 col-md-12 col-sm-12 p-5 ms-2">
           <h2>Sản phẩm bán chạy</h2>
         </div>
 

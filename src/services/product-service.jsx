@@ -21,6 +21,6 @@ export const findProductByCateId = async (id) =>{
 }
 
 export const addProductToCart = async(p) => {
-  const res = await axios.post(`http://localhost:8080/product`,p);
+  const res = await axios.post(`http://localhost:8080`,p);
   return res.data;
 }

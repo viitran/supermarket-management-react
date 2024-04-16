@@ -1,25 +1,54 @@
 import { useEffect, useState } from "react";
-import { Button, Fade } from "react-bootstrap";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Button } from "react-bootstrap";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   findProductByCateId,
   findProductById,
   addProductToCart,
 } from "../../../services/product-service";
+import { ToastContainer, toast, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function ProductDetail() {
   const [products, setProducts] = useState();
   const [product, setProduct] = useState();
   const params = useParams();
   const navigate = useNavigate();
+  const [count, setCount] = useState(1);
+
   const handleProductDetail = (id) => {
     navigate(`/product/${id}`);
     window.scrollTo(0, 0);
   };
 
+  const increment = () => {
+    setCount(count + 1);
+  };
 
-  const handleAddProductToCart = (id) => {
-    console.log(id);
-}
+  const decrement = () => {
+    if (count > 1) {
+      setCount(count - 1);
+    }
+  };
+
+  const handleAddProductToCart = () => {
+    const orderDto = {
+      productId: product.id,
+      quantity: count,
+    };
+    addProductToCart(orderDto);
+    toast.success("Thêm vào giỏ hàng thành công!", {
+      position: "top-center",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+      transition: Bounce,
+    });
+    console.log(orderDto);
+  };
 
   useEffect(() => {
     const { id } = params;
@@ -63,9 +92,8 @@ function ProductDetail() {
               </div>
             </div>
             <div className="col-12 mt-3">
-              
-                <h3>Thông tin sản phẩm:</h3>
-             <p>{product.description}</p>
+              <h3>Thông tin sản phẩm:</h3>
+              <p>{product.description}</p>
             </div>
             <div className="col-12 mt-3">
               <h6>
@@ -76,59 +104,75 @@ function ProductDetail() {
                 }).format(product.price)}
               </h6>
             </div>
+            <div className="col-12">
+              <Button onClick={decrement} disabled={count == 1}>
+                -
+              </Button>
+              <span>{count}</span>
+              <Button onClick={increment} disabled={count == product.quantity}>
+                +
+              </Button>
+            </div>
             <div className="col-12 mt-4">
               <Button className="me-2">Mua ngay</Button>
-              <Button onClick={() => handleAddProductToCart(product.id)}>Thêm vào giỏ hàng</Button>
+              <Button onClick={handleAddProductToCart}>
+                Thêm vào giỏ hàng
+              </Button>
             </div>
-            {/* <div className="col-12">
-                <h3>Chính sách bán hàng</h3>
-                <li>
-                Cam kết thực phẩm “3 Sạch”: Sạch từ nông trại – Sạch qua quá trình sơ chế, chế biến - Sạch đến bàn ăn.
-              </li>
-              <li>
-                Cam kết thực phẩm “3 Sạch”: Sạch từ nông trại – Sạch qua quá trình sơ chế, chế biến - Sạch đến bàn ăn.
-              </li>
-              <li>
-                Cam kết thực phẩm “3 Sạch”: Sạch từ nông trại – Sạch qua quá trình sơ chế, chế biến - Sạch đến bàn ăn.
-              </li>
-            </div> */}
           </div>
         </div>
         <hr />
         <h2 className="text-center">Có thể bạn thích</h2>
         <div className="col-12 row">
-        {products.map((product, index) => (
-          <div className="col-2 p-2 box text-center" key={index}>
-            <div>
-              <img
-                src={`data:image/jpeg;base64,${product.image}`}
-                alt=""
-                style={{ height: "100%", width: "100%" }}
-              />
+          {products.map((product, index) => (
+            <div className="col-2 p-2 box text-center" key={index}>
+              <div>
+                <img
+                  src={`data:image/jpeg;base64,${product.image}`}
+                  alt=""
+                  style={{ height: "100%", width: "100%" }}
+                />
+              </div>
+              <div
+                className="mt-3"
+                style={{ fontSize: "14px", fontWeight: "500" }}
+              >
+                {product.name.length > 23
+                  ? `${product.name.slice(0, 23)}...`
+                  : product.name}
+              </div>
+              <div>
+                {new Intl.NumberFormat("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                }).format(product.price)}
+              </div>
+              <div className="mt-3">
+                <button
+                  onClick={() => handleProductDetail(product.id)}
+                  className="button-81"
+                  role="button"
+                >
+                  Chọn Mua
+                </button>
+              </div>
             </div>
-            <div
-              className="mt-3"
-              style={{ fontSize: "14px", fontWeight: "500" }}
-            >
-              {product.name.length > 23
-                ? `${product.name.slice(0, 23)}...`
-                : product.name}
-            </div>
-            <div>
-              {new Intl.NumberFormat("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              }).format(product.price)}
-            </div>
-            <div className="mt-3">
-              <button onClick={() => handleProductDetail(product)} className="button-81" role="button">
-                Chọn Mua
-              </button>
-            </div>
-          </div>
-        ))}
+          ))}
         </div>
       </div>
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+        transition={Bounce}
+      />
     </>
   );
 }
