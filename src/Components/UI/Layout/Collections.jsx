@@ -1,23 +1,34 @@
-import { getCategories } from "../../../services/categories-service";
-import Footer from "../Footer/Footer";
-import Header from "../Header/Header";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getAllProduct } from "../../../services/product-service";
-import CarouselHome from "./../Carousel/CarouselHome";
+import { getCategories } from "../../../services/categories-service";
 import { NavLink } from "react-router-dom";
+
+const initParam = {
+  page: 0,
+  size: 100,
+  sortBy: "startDate",
+  sortDirection: "ASC",
+  categoryId: -1,
+  name: "",
+  priceFrom: null,
+  priceTo: null,
+};
+
 function Categories() {
   const [categories, setCategories] = useState();
   const [products, setProducts] = useState();
+  const [param, setParam] = useState(initParam);
+  const [showAllProducts, setShowAllProducts] = useState(false);
 
-  const getProduct = async () => {
-    getAllProduct().then((res) => {
+  const getProducts = (param) => {
+    getAllProduct(param).then((res) => {
       setProducts(res);
     });
   };
 
   useEffect(() => {
-    getProduct();
-  }, []);
+    getProducts(param);
+  }, [param]);
 
   useEffect(() => {
     const findAllCate = async () => {
@@ -28,8 +39,68 @@ function Categories() {
     findAllCate();
   }, []);
 
-  if (!categories) return <div>loading...</div>;
-  if (!products) return <div>loading...</div>;
+  const handlePriceFilterChange = (e) => {
+    const { name, value } = e.target;
+    const dt = {
+      ...param,
+      [name]: value,
+    };
+    switch (dt.priceFrom) {
+      case "under100":
+        dt.priceFrom = 0;
+        dt.priceTo = 100000;
+        break;
+      case "100to200":
+        dt.priceFrom = 100000;
+        dt.priceTo = 200000;
+        break;
+      case "200to300":
+        dt.priceFrom = 200000;
+        dt.priceTo = 300000;
+        break;
+      case "above300":
+        dt.priceFrom = 300000;
+        dt.priceTo = 1000000;
+        break;
+      default:
+        break;
+    }
+    setParam(dt);
+  };
+
+  const handleSortChange = (e) => {
+    const { value } = e.target;
+    let dt = { ...value };
+    switch (value) {
+      case "priceD":
+        dt = { ...param, sortBy: "price", sortDirection: "DESC" };
+        break;
+      case "priceA":
+        dt = { ...param, sortBy: "price", sortDirection: "ASC" };
+        break;
+      case "nameD":
+        dt = { ...param, sortBy: "name", sortDirection: "DESC" };
+        break;
+      case "nameA":
+        dt = { ...param, sortBy: "name", sortDirection: "ASC" };
+        break;
+      case "old":
+        dt = { ...param, sortBy: "startDate", sortDirection: "ASC" };
+        break;
+      case "new":
+        dt = { ...param, sortBy: "startDate", sortDirection: "DESC" };
+        break;
+      default:
+        break;
+    }
+    setParam(dt);
+  };
+
+  if (!categories || !products) return <div>loading...</div>;
+
+  const displayedProducts = showAllProducts
+    ? products.content
+    : products.content.slice(0, 8);
 
   return (
     <>
@@ -62,33 +133,32 @@ function Categories() {
                   />
                 </div>
                 <div className="col-7">
-                  <select>
-                    <option selected>Lọc giá</option>
-                    <option>Dưới 100.000₫</option>
-                    <option>100.000 - 200.000₫</option>
-                    <option>200.000 - 300.000₫</option>
-                    <option>Trên 300.000₫</option>
+                  <select name="priceFrom" onChange={handlePriceFilterChange}>
+                    <option value="">Lọc giá</option>
+                    <option value="under100">Dưới 100.000₫</option>
+                    <option value="100to200">100.000 - 200.000₫</option>
+                    <option value="200to300">200.000 - 300.000₫</option>
+                    <option value="above300">Trên 300.000₫</option>
                   </select>
                 </div>
               </div>
               <div className="col-6 row">
                 <div className="col-9"></div>
-
                 <div className="col-3">
-                  <select>
-                    <option>Sắp xếp</option>
-                    <option>Giá: Giảm dần</option>
-                    <option>Giá: Tăng dần</option>
-                    <option>Tên: Giảm dần</option>
-                    <option>Tên: Tăng dần</option>
-                    <option>Cũ nhất</option>
-                    <option>Mới nhất</option>
+                  <select name="sortBy" onChange={handleSortChange}>
+                    <option value= "">Sắp xếp</option>
+                    <option value="priceD">Giá: Giảm dần</option>
+                    <option value="priceA">Giá: Tăng dần</option>
+                    <option value="nameD">Tên: Z - A</option>
+                    <option value="nameA">Tên: A - Z </option>
+                    <option value="old">Cũ nhất</option>
+                    <option value="new">Mới nhất</option>
                   </select>
                 </div>
               </div>
             </div>
             <div className="col-12 row ms-2 justify-content-center text-center">
-              {products.map((product, index) => (
+              {displayedProducts.map((product, index) => (
                 <div className="col-2 p-2 box" key={index}>
                   <div>
                     <img
@@ -119,10 +189,20 @@ function Categories() {
                 </div>
               ))}
             </div>
+            {/* Show more/Show less button */}
+            <div className="text-center mt-3">
+              <button
+                className="btn btn-primary"
+                onClick={() => setShowAllProducts(!showAllProducts)}
+              >
+                {showAllProducts ? "Hiện ít hơn" : "Hiện thêm"}
+              </button>
+            </div>
           </div>
         </div>
       </section>
     </>
   );
 }
+
 export default Categories;

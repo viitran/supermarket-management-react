@@ -105,13 +105,35 @@ function ProductDetail() {
               </h6>
             </div>
             <div className="col-12">
-              <Button onClick={decrement} disabled={count == 1}>
+              <button
+                style={{
+                  backgroundColor: "white",
+                  border: "1px solid #ccc",
+                  padding: "5px 10px",
+                  cursor: "pointer",
+                  marginRight: "5px",
+                  borderRadius: "5px",
+                }}
+                onClick={decrement}
+                disabled={count == 1}
+              >
                 -
-              </Button>
-              <span>{count}</span>
-              <Button onClick={increment} disabled={count == product.quantity}>
+              </button>
+              <span style={{ margin: "0 10px" }}>{count}</span>
+              <button
+                style={{
+                  backgroundColor: "white",
+                  border: "1px solid #ccc",
+                  padding: "5px 10px",
+                  cursor: "pointer",
+                  marginRight: "5px",
+                  borderRadius: "5px",
+                }}
+                onClick={increment}
+                disabled={count == product.quantity}
+              >
                 +
-              </Button>
+              </button>
             </div>
             <div className="col-12 mt-4">
               <Button className="me-2">Mua ngay</Button>
