@@ -28,3 +28,8 @@ export const addProductToCart = async (p) => {
   const res = await axios.post(`http://localhost:8080`, p);
   return res.data;
 };
+
+export const getCartDetail = async (p) => {
+  const res = await axios.post(`http://localhost:8080/cart-detail`, p);
+  return res.data;
+}

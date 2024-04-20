@@ -70,7 +70,7 @@ function Categories() {
 
   const handleSortChange = (e) => {
     const { value } = e.target;
-    let dt = { ...value };
+    let dt = { ...param };
     switch (value) {
       case "priceD":
         dt = { ...param, sortBy: "price", sortDirection: "DESC" };
@@ -91,6 +91,7 @@ function Categories() {
         dt = { ...param, sortBy: "startDate", sortDirection: "DESC" };
         break;
       default:
+        dt = { ...param, sortBy: "startDate", sortDirection: "ASC" };
         break;
     }
     setParam(dt);

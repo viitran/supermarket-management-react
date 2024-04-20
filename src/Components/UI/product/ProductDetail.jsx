@@ -5,6 +5,7 @@ import {
   findProductByCateId,
   findProductById,
   addProductToCart,
+  getCartDetail,
 } from "../../../services/product-service";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -14,6 +15,11 @@ function ProductDetail() {
   const params = useParams();
   const navigate = useNavigate();
   const [count, setCount] = useState(1);
+  const [cart, setCart] = useState();
+
+  const handleNavigatePayment = () => {
+    navigate("/payment");
+  };
 
   const handleProductDetail = (id) => {
     navigate(`/product/${id}`);
@@ -59,10 +65,15 @@ function ProductDetail() {
           setProducts(resp);
         });
       });
+      getCartDetail({ productId: id }).then((res) => {
+        setCart(res);
+      });
     }
   }, [params]);
+
   if (!product) return <div>loading..</div>;
   if (!products) return <div>loading..</div>;
+  
   return (
     <>
       <div className="container">
@@ -88,7 +99,14 @@ function ProductDetail() {
               </div>
 
               <div className="col-9">
-                Tình trạng: <small>{product.status.name}</small>
+                Tình trạng:{" "}
+                <small>
+                  {product.quantity >= 65
+                    ? "Còn hàng"
+                    : product.quantity >= 1 && product.quantity <= 64
+                    ? "Sắp hết hàng"
+                    : "Hết hàng"}
+                </small>
               </div>
             </div>
             <div className="col-12 mt-3">
@@ -115,7 +133,7 @@ function ProductDetail() {
                   borderRadius: "5px",
                 }}
                 onClick={decrement}
-                disabled={count == 1}
+                disabled={count <= 1}
               >
                 -
               </button>
@@ -130,13 +148,15 @@ function ProductDetail() {
                   borderRadius: "5px",
                 }}
                 onClick={increment}
-                disabled={count == product.quantity}
+                disabled={count + cart.quantity >= product.quantity}
               >
                 +
               </button>
             </div>
             <div className="col-12 mt-4">
-              <Button className="me-2">Mua ngay</Button>
+              <Button className="me-2" onClick={handleNavigatePayment}>
+                Mua ngay
+              </Button>
               <Button onClick={handleAddProductToCart}>
                 Thêm vào giỏ hàng
               </Button>

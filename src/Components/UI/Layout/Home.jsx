@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import { getNewProduct } from "../../../services/product-service";
 import { useNavigate } from "react-router-dom";
 import { getCategories } from "../../../services/categories-service";
-import CarouselHome from './../Carousel/CarouselHome';
+import CarouselHome from "./../Carousel/CarouselHome";
+import { ToastContainer, toast, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function Home() {
   const [products, setProducts] = useState();
   const [category, setCategory] = useState();
@@ -123,7 +125,7 @@ function Home() {
                   className="button-81"
                   role="button"
                 >
-                  Chọn Mua
+                  Chi tiết
                 </button>
               </div>
             </div>
@@ -137,6 +139,19 @@ function Home() {
           style={{ width: "90%" }}
         />
       </div>
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+        transition={Bounce}
+      />
     </>
   );
 }

@@ -6,6 +6,7 @@ import Categories from './Components/UI/Layout/Collections.jsx';
 import Cart from "./Components/UI/cart/Cart.jsx";
 import Layout from "./Components/UI/Layout/Layout.jsx";
 import ProductDetail from "./Components/UI/product/ProductDetail.jsx";
+import Checkout from "./Components/checkout/Checkout.jsx";
 
 function App() {
   return (
@@ -13,11 +14,13 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />} >
         <Route index path="/" element={<Home />} />
-        {/* <Route path="/login" element={<Login />} /> */}
         <Route path="/collections" element={<Categories />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/checkout" element={<Checkout />} />
         </Route>
+        <Route path="/login" element={<Login />} />
+
       </Routes>
     </BrowserRouter>
   );
