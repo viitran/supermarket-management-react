@@ -16,7 +16,7 @@ function ProductDetail() {
   const navigate = useNavigate();
   const [count, setCount] = useState(1);
   const [cart, setCart] = useState();
-
+ const [cartCount, setCartCount] = useState(0);
   const handleNavigatePayment = () => {
     navigate("/payment");
   };
@@ -41,6 +41,7 @@ function ProductDetail() {
       productId: product.id,
       quantity: count,
     };
+    setCartCount(prevCount => prevCount + 1);
     addProductToCart(orderDto);
     toast.success("Thêm vào giỏ hàng thành công!", {
       position: "top-center",

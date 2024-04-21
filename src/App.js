@@ -2,12 +2,11 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Home from "./Components/UI/Layout/Home.jsx";
 import Login from "./Components/UI/Login/Login.jsx";
-import Categories from './Components/UI/Layout/Collections.jsx';
 import Cart from "./Components/UI/cart/Cart.jsx";
-import Layout from "./Components/UI/Layout/Layout.jsx";
+import Layout from './common/Layout';
+import Categories from './Components/UI/product/category/Collections';
 import ProductDetail from "./Components/UI/product/ProductDetail.jsx";
-import Checkout from "./Components/checkout/Checkout.jsx";
-
+import Checkout from './Components/UI/checkout/Checkout.jsx';
 function App() {
   return (
     <BrowserRouter>

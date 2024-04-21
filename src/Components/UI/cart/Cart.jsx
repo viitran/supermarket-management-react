@@ -3,7 +3,7 @@ import { getAllOrderOfUser } from "../../../services/cart-service";
 import { addProductToCart } from "../../../services/product-service";
 import { Link, useNavigate } from "react-router-dom";
 
-function Cart() {
+function CartApp() {
   const [orders, setOrders] = useState();
   const [order, setOrder] = useState();
   const navigate = useNavigate();
@@ -189,4 +189,4 @@ function Cart() {
     </>
   );
 }
-export default Cart;
+export default CartApp;

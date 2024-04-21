@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import { getNewProduct } from "../../../services/product-service";
 import { useNavigate } from "react-router-dom";
 import { getCategories } from "../../../services/categories-service";
-import CarouselHome from "./../Carousel/CarouselHome";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import CarouselHome from '../../../common/Carousel/CarouselHome.jsx';
 function Home() {
   const [products, setProducts] = useState();
   const [category, setCategory] = useState();

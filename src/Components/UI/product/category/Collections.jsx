@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { getAllProduct } from "../../../services/product-service";
-import { getCategories } from "../../../services/categories-service";
+import { getAllProduct } from "../../../../services/product-service";
+import { getCategories } from "../../../../services/categories-service";
 import { NavLink } from "react-router-dom";
 
 const initParam = {
@@ -19,6 +19,8 @@ function Categories() {
   const [products, setProducts] = useState();
   const [param, setParam] = useState(initParam);
   const [showAllProducts, setShowAllProducts] = useState(false);
+  // const [cartCount, setCartCount] = useState(0);
+
 
   const getProducts = (param) => {
     getAllProduct(param).then((res) => {

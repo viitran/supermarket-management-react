@@ -1,15 +1,31 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { getUserInfo } from "../redux/slide/user-slice";
+import { useAppDispatch } from "../redux/redux-hook";
+import { useRef } from "react";
+import { getSearch } from "../redux/slide/common-slice";
 
 function Header() {
+  const userInfo = useSelector(getUserInfo);
+  const dispatch = useAppDispatch();
+  const [search, setSearch] = useState();
+  const inputRef = useRef();
   const navigate = useNavigate();
+  const searchRedux = useSelector(getSearch);
+
   const handleNavigateLoginPage = () => {
     navigate("/login");
   };
 
+
+
+
   const handleNavigateCart = () => {
     navigate("/cart");
-  }
-  
+  };
+
+
   return (
     <>
       <div
@@ -36,6 +52,7 @@ function Header() {
           <div className="col-9 row p-3">
             <div className="col-6">
               <input
+                name="search"
                 className="form-control"
                 placeHolder="Tìm kiếm sản phẩm..."
               />
@@ -50,7 +67,10 @@ function Header() {
               </button>
             </div>
             <div className="col-2">
-              <button style={{backgroundColor: "white"}} onClick={handleNavigateCart}>
+              <button
+                style={{ backgroundColor: "white" }}
+                onClick={handleNavigateCart}
+              >
                 <img
                   src="/img/HomePage/cart.png"
                   alt=""
@@ -59,37 +79,6 @@ function Header() {
               </button>
             </div>
             <div className="col-2 p-1">
-              {/* <div className="dropdown">
-                <button
-                  data-mdb-button-init
-                  data-mdb-ripple-init
-                  data-mdb-dropdown-init
-                  className="btn btn-primary dropdown-toggle"
-                  type="button"
-                  id="dropdownMenuButton"
-                  data-mdb-toggle="dropdown"
-                  aria-expanded="false"
-                >
-                  Dropdown button
-                </button>
-                <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                  <li>
-                    <a class="dropdown-item" href="#">
-                      Action
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="#">
-                      Another action
-                    </a>
-                  </li>
-                  <li>
-                    <a class="dropdown-item" href="#">
-                      Something else here
-                    </a>
-                  </li>
-                </ul>
-              </div> */}
               <button
                 style={{ border: "none", backgroundColor: "white" }}
                 onClick={handleNavigateLoginPage}
