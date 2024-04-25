@@ -9,14 +9,20 @@ import {
 } from "../../../services/product-service";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getAllProductsThatCanBeDishesForId } from "./../../../services/product-service";
+import { isLogin } from "../../../common/render";
+import { useSelector } from "react-redux";
+import { getUserInfo } from "../../../redux/slide/user-slice";
 function ProductDetail() {
+  const userInfo = useSelector(getUserInfo);
   const [products, setProducts] = useState();
   const [product, setProduct] = useState();
   const params = useParams();
   const navigate = useNavigate();
   const [count, setCount] = useState(1);
   const [cart, setCart] = useState();
- const [cartCount, setCartCount] = useState(0);
+  const [cartCount, setCartCount] = useState(0);
+  const [recommendDishes, setRecommendDishes] = useState();
   const handleNavigatePayment = () => {
     navigate("/payment");
   };
@@ -41,7 +47,8 @@ function ProductDetail() {
       productId: product.id,
       quantity: count,
     };
-    setCartCount(prevCount => prevCount + 1);
+    console.log(orderDto);
+    setCartCount((prevCount) => prevCount + 1);
     addProductToCart(orderDto);
     toast.success("Thêm vào giỏ hàng thành công!", {
       position: "top-center",
@@ -54,8 +61,8 @@ function ProductDetail() {
       theme: "colored",
       transition: Bounce,
     });
-    console.log(orderDto);
   };
+
 
   useEffect(() => {
     const { id } = params;
@@ -65,16 +72,43 @@ function ProductDetail() {
         findProductByCateId(res.category.id).then((resp) => {
           setProducts(resp);
         });
+        getAllProductsThatCanBeDishesForId(id).then((r) => {
+          setRecommendDishes(r);
+        });
       });
-      getCartDetail({ productId: id }).then((res) => {
-        setCart(res);
-      });
+
+      getCartDetail({ productId: id })
+        .then((res) => {
+          if (res && res.quantity !== undefined) {
+            setCart(res);
+          } else {
+            setCart({ quantity: 1 });
+          }
+        })
+        .catch((error) => {
+          console.error("Failed to fetch cart details:", error);
+          setCart({ quantity: 1 });
+        });
     }
   }, [params]);
 
+  const handleAddToCart = (product) => {
+    if (isLogin(userInfo)) {
+      handleAddProductToCart(product);
+    } else {
+      toast("Vui lòng đăng nhập!!");
+    }
+  };
+
   if (!product) return <div>loading..</div>;
   if (!products) return <div>loading..</div>;
-  
+  if (!recommendDishes) return <div>loading..</div>;
+  // const renderComplementaryProducts = () => {
+  //   if (!recommendDishes || recommendDishes.length === 0) {
+  //     return null;
+  //   }
+  // }
+
   return (
     <>
       <div className="container">
@@ -158,9 +192,7 @@ function ProductDetail() {
               <Button className="me-2" onClick={handleNavigatePayment}>
                 Mua ngay
               </Button>
-              <Button onClick={handleAddProductToCart}>
-                Thêm vào giỏ hàng
-              </Button>
+              <Button onClick={handleAddToCart}>Thêm vào giỏ hàng</Button>
             </div>
           </div>
         </div>
@@ -202,6 +234,49 @@ function ProductDetail() {
             </div>
           ))}
         </div>
+        {recommendDishes.products ? (
+          <div className="mt-5">
+            <h2>Có thể kết hợp {product.name} </h2>
+            <div className="col-12 row">
+              {recommendDishes.products.map((dish) => (
+                <div className="col-2 p-2 box text-center" key={dish.id}>
+                  <div>
+                    <img
+                      src={`data:image/jpeg;base64,${dish.image}`}
+                      alt=""
+                      style={{ height: "100%", width: "100%" }}
+                    />
+                  </div>
+                  <div
+                    className="mt-3"
+                    style={{ fontSize: "14px", fontWeight: "500" }}
+                  >
+                    {dish.name.length > 23
+                      ? `${dish.name.slice(0, 23)}...`
+                      : dish.name}
+                  </div>
+                  <div>
+                    {new Intl.NumberFormat("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    }).format(dish.price)}
+                  </div>
+                  <div className="mt-3">
+                    <button
+                      onClick={() => handleProductDetail(dish.id)}
+                      className="button-81"
+                      role="button"
+                    >
+                      Chọn Mua
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div>asdkbjajd</div>
+        )}
       </div>
       <ToastContainer
         position="top-center"

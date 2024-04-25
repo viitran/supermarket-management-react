@@ -1,15 +1,20 @@
 // import Footer from "../Footer/Footer";
 import { useEffect, useState } from "react";
 import { getNewProduct } from "../../../services/product-service";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getCategories } from "../../../services/categories-service";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import CarouselHome from '../../../common/Carousel/CarouselHome.jsx';
+import CarouselHome from "../../../common/Carousel/CarouselHome.jsx";
+import { useSelector } from 'react-redux';
+import { getUserInfo } from "../../../redux/slide/user-slice.jsx";
+
 function Home() {
   const [products, setProducts] = useState();
-  const [category, setCategory] = useState();
+  const [categories, setCategories] = useState();
   const navigate = useNavigate();
+  const userInfo = useSelector(getUserInfo);
+
 
   const findNewProduct = async () => {
     getNewProduct().then((res) => {
@@ -20,15 +25,14 @@ function Home() {
   useEffect(() => {
     const getNameCategory = async () => {
       getCategories().then((res) => {
-        console.log(res);
-        setCategory(res);
+        setCategories(res);
       });
     };
     getNameCategory();
   }, []);
 
-  const handleNavigateCate = () => {
-    navigate("/collections");
+  const handleNavigateCate = (id) => {
+    navigate(`/category/${id}`);
   };
 
   const handleAddProductToCart = (id) => {
@@ -45,54 +49,31 @@ function Home() {
     <>
       <CarouselHome />
       <div className="col-12 row p-3 text-center">
-        <div className="col-lg-3 col-md-12 col-sm-12">
-          <button className="button-cate" onClick={handleNavigateCate}>
-            <img
-              src="/img/HomePage/meat.png"
-              alt=""
-              style={{ width: "50px", height: "50px" }}
-              className="p-1"
-            />{" "}
-            Tươi sống
-          </button>
-        </div>
-        <div className="col-lg-3 col-md-12 col-sm-12">
-          <button className="button-cate">
-            <img
-              src="/img/HomePage/vegatable.png"
-              alt=""
-              style={{ width: "50px", height: "50px" }}
-              className="p-1"
-            />{" "}
-            Rau
-          </button>
-        </div>
-        <div className="col-lg-3 col-md-12 col-sm-12 text-center">
-          <button className="button-cate">
-            <img
-              src="/img/HomePage/nuoc.png"
-              alt=""
-              style={{ width: "50px", height: "50px" }}
-              className="p-1"
-            />{" "}
-            Nước
-          </button>
-        </div>
-        <div className="col-lg-3 col-md-12 col-sm-12">
-          <button className="button-cate">
-            <img
-              src="/img/HomePage/fruit.png"
-              alt=""
-              style={{ width: "50px", height: "50px" }}
-              className="p-1"
-            />{" "}
-            Củ - Quả
-          </button>
-        </div>
+        {categories.map((cate, index) => (
+          <div className="col-lg-3 col-md-12 col-sm-12" key={cate.id}>
+            <button
+              className="button-cate"
+              onClick={() => handleNavigateCate(cate.id)}
+            >
+              {/* <img
+                src={`data:image/jpeg;base64,${cate.image}`}
+                alt=""
+                style={{ width: "50px", height: "50px" }}
+                className="p-1"
+              />{" "} */}
+              {cate.name}
+            </button>
+          </div>
+        ))}
       </div>
       <div className="col-12 row">
-        <div className="col-lg-12 col-md-12 col-sm-12 p-5 ms-2">
-          <h2>Sản phẩm bán chạy</h2>
+        <div className="col-lg-12 col-md-12 col-sm-12 p-5 ms-2 row">
+          <div className="col-10">
+            <h2>Sản phẩm bán chạy</h2>
+          </div>
+          <div className="col-2 mt-4">
+            <Link to={"/collections"}>Tất cả sản phẩm</Link>
+          </div>
         </div>
 
         <div className="col-12 row ms-2 justify-content-center text-center">

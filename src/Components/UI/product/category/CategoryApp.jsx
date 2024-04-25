@@ -1,12 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { getAllProduct } from "../../../../services/product-service";
-import { getCategories } from "../../../../services/categories-service";
-import { NavLink, useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { getUserInfo } from "../../../../redux/slide/user-slice";
-import { useAppDispatch } from "../../../../redux/redux-hook";
-import { getSearch } from "../../../../redux/slide/common-slice";
-
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
+import { findProductByCateId } from "../../../../services/product-service";
 const initParam = {
   page: 0,
   size: 100,
@@ -17,41 +12,22 @@ const initParam = {
   priceFrom: null,
   priceTo: null,
 };
-
-function Categories() {
+function CategoryApp() {
+  const params = useParams();
   const [categories, setCategories] = useState();
-  const [products, setProducts] = useState();
-  const userInfo = useSelector(getUserInfo);
-  const dispatch = useAppDispatch();
-  const searchRedux = useSelector(getSearch);
   const [param, setParam] = useState(initParam);
-  const [showAllProducts, setShowAllProducts] = useState(false);
-  // const [cartCount, setCartCount] = useState(0);
-  const navigate = useNavigate();
 
-  const handleAddProductToCart = (id) => {
-    navigate(`/product/${id}`);
-  };
-
-  const getProducts = (param) => {
-    getAllProduct(param).then((res) => {
-      setProducts(res);
-    });
-  };
+  
 
   useEffect(() => {
-    getProducts({ ...param, name: searchRedux.navBar });
-    setParam({ ...param, name: searchRedux.navBar });
-  }, [searchRedux]);
-
-  useEffect(() => {
-    const findAllCate = async () => {
-      getCategories().then((res) => {
+    const { id } = params;
+    if (params && id) {
+      findProductByCateId(id).then((res) => {
         setCategories(res);
+        console.log(res);
       });
-    };
-    findAllCate();
-  }, []);
+    }
+  }, [params])
 
   const handlePriceFilterChange = (e) => {
     const { name, value } = e.target;
@@ -79,7 +55,6 @@ function Categories() {
       default:
         break;
     }
-    getProducts(dt);
     setParam(dt);
   };
 
@@ -109,16 +84,10 @@ function Categories() {
         dt = { ...param, sortBy: "startDate", sortDirection: "ASC" };
         break;
     }
-    getProducts(dt);
     setParam(dt);
   };
 
-  if (!categories || !products) return <div>loading...</div>;
-
-  const displayedProducts = showAllProducts
-    ? products.content
-    : products.content.slice(0, 8);
-
+  if(!categories) return <div>loading...</div>
   return (
     <>
       <hr />
@@ -128,6 +97,24 @@ function Categories() {
         </NavLink>{" "}
         {">"} Tất cả sản phẩm{" "}
       </div>
+      {/* <div className="col-12 row p-3 text-center">
+        {category.map((cate, index) => (
+          <div className="col-lg-3 col-md-12 col-sm-12" key={cate.id}>
+            <button
+              className="button-cate"
+              onClick={() => handleNavigateCate(cate.id)}
+            >
+              <img
+                src={`data:image/jpeg;base64,${cate.image}`}
+                alt=""
+                style={{ width: "50px", height: "50px" }}
+                className="p-1"
+              />{" "}
+              {cate.name}
+            </button>
+          </div>
+        ))}
+      </div> */}
       <section>
         <div className="p-5">
           <div className="row mt-3">
@@ -175,49 +162,40 @@ function Categories() {
               </div>
             </div>
             <div className="col-12 row ms-2 justify-content-center text-center">
-              {displayedProducts.map((product, index) => (
-                <div className="col-2 p-2 box" key={index}>
-                  <div>
-                    <img
-                      src={`data:image/jpeg;base64,${product.image}`}
-                      alt=""
-                      style={{ height: "100%", width: "100%" }}
-                    />
-                  </div>
-                  <div
-                    className="mt-3"
-                    style={{ fontSize: "14px", fontWeight: "500" }}
-                  >
-                    {product.name.length > 23
-                      ? `${product.name.slice(0, 23)}...`
-                      : product.name}
-                  </div>
-                  <div>
-                    {new Intl.NumberFormat("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    }).format(product.price)}
-                  </div>
-                  <div className="mt-3">
-                    <button
-                      className="button-81"
-                      role="button"
-                      onClick={() => handleAddProductToCart(product.id)}
-                    >
-                      Chọn Mua
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-            {/* Show more/Show less button */}
-            <div className="text-center mt-3">
-              <button
-                className="btn btn-primary"
-                onClick={() => setShowAllProducts(!showAllProducts)}
+            {categories.map((c, index) => (
+            <div className="col-2 p-2 box text-center" key={c.id}>
+              <div>
+                <img
+                  src={`data:image/jpeg;base64,${c.image}`}
+                  alt=""
+                  style={{ height: "100%", width: "100%" }}
+                />
+              </div>
+              <div
+                className="mt-3"
+                style={{ fontSize: "14px", fontWeight: "500" }}
               >
-                {showAllProducts ? "Hiện ít hơn" : "Hiện thị thêm"}
-              </button>
+                {c.name.length > 23
+                  ? `${c.name.slice(0, 23)}...`
+                  : c.name}
+              </div>
+              <div>
+                {new Intl.NumberFormat("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                }).format(c.price)}
+              </div>
+              <div className="mt-3">
+                <button
+                //   onClick={() => handleProductDetail(c.id)}
+                  className="button-81"
+                  role="button"
+                >
+                  Chọn Mua
+                </button>
+              </div>
+            </div>
+          ))}
             </div>
           </div>
         </div>
@@ -225,5 +203,4 @@ function Categories() {
     </>
   );
 }
-
-export default Categories;
+export default CategoryApp;

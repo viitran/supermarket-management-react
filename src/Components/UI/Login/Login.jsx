@@ -4,6 +4,8 @@ import { toast } from 'react-toastify';
 import { findUserInfo } from './../../../services/user';
 import { useAppDispatch } from "../../../redux/redux-hook";
 import { userActions } from './../../../redux/slide/user-slice';
+import { getAllOrderOfUser } from "../../../services/cart-service";
+import { cartActions } from "../../../redux/slide/cart-slice";
 
 function Login() {
   const navigate = useNavigate();
@@ -19,20 +21,19 @@ function Login() {
 
     handleLogin(data)
       .then((res) => {
-        navigate("/");
+        navigate(-1);
         toast("Đăng nhập thành công!!");
         findUserInfo().then((res) => {
           dispatch(userActions.setUserInfo(res));
         });
-        // showProductInCart().then((res) => {
-        //   const size = res.reduce((c: any, cart: any) => {
-        //     return c + cart.quantity;
-        //   }, 0);
-        //   dispatch(cartActions.setCartSize(size));
-        // });
+        getAllOrderOfUser().then(res => {
+          const size = res.reduce((c, cart) => {
+            return c + cart.quantity
+          }, 0)
+          dispatch(cartActions.setCartSize(size))
+        })
       })
       .catch((err) => {
-        alert("sai tk or mk");
         toast("Tên tài khoản hoặc mật khẩu không chính xác!");
       });
   };
@@ -41,9 +42,11 @@ function Login() {
     <div className="container p-5">
       <div className="row p-5 mt-5">
         <div className="col-6 text-center p-5 mt-5">
-          <img src="/img/HomePage/logo.jpg" alt="" />
+          <img src="/img/HomePage/logo.jpg" alt="" 
+          onClick={() => navigate("/")}
+          />
         </div>
-        <div className="col-6 row">
+        <div className="col-lg-6 row">
           <div>
             <h3>Đăng nhập</h3>
             <form onSubmit={handleSubmit}>
@@ -71,7 +74,7 @@ function Login() {
               </div>
             </form>
             <div className="col-12 mt-3">
-              <Link to="#">Bạn chưa có tài khoản? Đăng ký ngay</Link>
+              <Link to={"/signup"}>Bạn chưa có tài khoản? Đăng ký ngay</Link>
             </div>
           </div>
         </div>
