@@ -21,7 +21,7 @@ function ProductDetail() {
   const navigate = useNavigate();
   const [count, setCount] = useState(1);
   const [cart, setCart] = useState();
-  const [cartCount, setCartCount] = useState(0);
+  const [cartSize, setCartSize] = useState(0);
   const [recommendDishes, setRecommendDishes] = useState();
   const handleNavigatePayment = () => {
     navigate("/payment");
@@ -48,7 +48,7 @@ function ProductDetail() {
       quantity: count,
     };
     console.log(orderDto);
-    setCartCount((prevCount) => prevCount + 1);
+    setCartSize((prevCount) => prevCount + 1);
     addProductToCart(orderDto);
     toast.success("Thêm vào giỏ hàng thành công!", {
       position: "top-center",
@@ -64,33 +64,33 @@ function ProductDetail() {
   };
 
 
-  useEffect(() => {
-    const { id } = params;
-    if (params && id) {
-      findProductById(id).then((res) => {
-        setProduct(res);
-        findProductByCateId(res.category.id).then((resp) => {
-          setProducts(resp);
+    useEffect(() => {
+      const { id } = params;
+      if (params && id) {
+        findProductById(id).then((res) => {
+          setProduct(res);
+          findProductByCateId(res.category.id).then((resp) => {
+            setProducts(resp);
+          });
+          getAllProductsThatCanBeDishesForId(id).then((r) => {
+            setRecommendDishes(r);
+          });
         });
-        getAllProductsThatCanBeDishesForId(id).then((r) => {
-          setRecommendDishes(r);
-        });
-      });
 
-      getCartDetail({ productId: id })
-        .then((res) => {
-          if (res && res.quantity !== undefined) {
-            setCart(res);
-          } else {
+        getCartDetail({ productId: id })
+          .then((res) => {
+            if (res && res.quantity !== undefined) {
+              setCart(res);
+            } else {
+              setCart({ quantity: 1 });
+            }
+          })
+          .catch((error) => {
+            console.error("Failed to fetch cart details:", error);
             setCart({ quantity: 1 });
-          }
-        })
-        .catch((error) => {
-          console.error("Failed to fetch cart details:", error);
-          setCart({ quantity: 1 });
-        });
-    }
-  }, [params]);
+          });
+      }
+    }, [params]);
 
   const handleAddToCart = (product) => {
     if (isLogin(userInfo)) {
@@ -103,15 +103,10 @@ function ProductDetail() {
   if (!product) return <div>loading..</div>;
   if (!products) return <div>loading..</div>;
   if (!recommendDishes) return <div>loading..</div>;
-  // const renderComplementaryProducts = () => {
-  //   if (!recommendDishes || recommendDishes.length === 0) {
-  //     return null;
-  //   }
-  // }
 
   return (
     <>
-      <div className="container">
+      <div className="container" >
         <div className="col-12 row">
           <div className="col-6" style={{ borderRight: "solid 1px lightgrey" }}>
             <img
@@ -147,6 +142,7 @@ function ProductDetail() {
             <div className="col-12 mt-3">
               <h3>Thông tin sản phẩm:</h3>
               <p>{product.description}</p>
+              <h6>Số lượng tồn kho: {product.quantity}</h6>
             </div>
             <div className="col-12 mt-3">
               <h6>
@@ -275,7 +271,10 @@ function ProductDetail() {
             </div>
           </div>
         ) : (
-          <div>asdkbjajd</div>
+          <div className="mt-5 col-12">
+            <h2>Các sản phẩm vừa xem</h2>
+            
+          </div>
         )}
       </div>
       <ToastContainer

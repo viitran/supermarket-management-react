@@ -1,19 +1,42 @@
 import { useEffect, useState } from "react";
-import { getAllOrderOfUser } from './../../../services/cart-service';
+import { getAllOrderOfUser } from "./../../../services/cart-service";
+import { useNavigate } from "react-router-dom";
+import { createPayment } from "../../../services/payment-service";
 
 function Checkout() {
   const [carts, setCarts] = useState();
+  const [totalPrice, setTotalPrice] = useState(0);
+  const navigate = useNavigate();
 
   const getProductOrder = () => {
     getAllOrderOfUser().then((res) => {
       setCarts(res);
       console.log(res);
-    })
-  }
+    });
+  };
 
-  useEffect(()=>{
+  useEffect(() => {
     getProductOrder();
-  },[])
+  }, []);
+
+  useEffect(() => {
+    if (carts) {
+      const totalPrice = carts.reduce((total, order) => {
+        return total + order.product.price * order.quantity;
+      }, 0);
+      setTotalPrice(totalPrice);
+    }
+  }, [carts]);
+
+  const handlePayment = () => {
+    console.log("test");
+    createPayment(totalPrice).then((res) => {
+      navigate("/payment-successfully");
+      
+    });
+  };
+
+  if (!carts) return <div>loading...</div>;
 
   return (
     <>
@@ -26,130 +49,48 @@ function Checkout() {
                   <thead>
                     <tr>
                       <th scope="col" className="h5">
-                        Shopping Bag
+                        Sản phẩm
                       </th>
-                      <th scope="col">Format</th>
-                      <th scope="col">Quantity</th>
-                      <th scope="col">Price</th>
+                      <th scope="col">Số lượng</th>
+                      <th scope="col">Đơn vị</th>
+                      <th scope="col">Tạm tính</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <th scope="row">
-                        <div className="d-flex align-items-center">
-                          <img
-                            src="https://i.imgur.com/2DsA49b.webp"
-                            className="img-fluid rounded-3"
-                            style={{ width: "120px" }}
-                            alt="Book"
-                          />
-                          <div className="flex-column ms-4">
-                            <p className="mb-2">Thinking, Fast and Slow</p>
-                            <p className="mb-0">Daniel Kahneman</p>
+                    {carts.map((c) => (
+                      <tr key={c.id}>
+                        <th scope="row">
+                          <div className="d-flex align-items-center">
+                            <img
+                              src={`data:image/jpeg;base64,${c.product.image}`}
+                              className="img-fluid rounded-3"
+                              style={{ width: "120px" }}
+                              alt="Book"
+                            />
+                            <div className="flex-column ms-4">
+                              <p className="mb-2"></p>
+                              <p className="mb-0">Daniel Kahneman</p>
+                            </div>
                           </div>
-                        </div>
-                      </th>
-                      <td className="align-middle">
-                        <p class="mb-0" style={{ "font-weight": "500" }}>
-                          Digital
-                        </p>
-                      </td>
-                      <td className="align-middle">
-                        <div className="d-flex flex-row">
-                          <button
-                            data-mdb-button-init
-                            data-mdb-ripple-init
-                            className="btn btn-link px-2"
-                            onClick="this.parentNode.querySelector('input[type=number]').stepDown()"
-                          >
-                            <i className="fas fa-minus"></i>
-                          </button>
-
-                          <input
-                            id="form1"
-                            min="0"
-                            name="quantity"
-                            value="2"
-                            type="number"
-                            class="form-control form-control-sm"
-                            style={{ width: "50px" }}
-                          />
-
-                          <button
-                            data-mdb-button-init
-                            data-mdb-ripple-init
-                            className="btn btn-link px-2"
-                            onClick="this.parentNode.querySelector('input[type=number]').stepUp()"
-                          >
-                            <i className="fas fa-plus"></i>
-                          </button>
-                        </div>
-                      </td>
-                      <td className="align-middle">
-                        <p class="mb-0" style={{ "font-weight": "500" }}>
-                          $9.99
-                        </p>
-                      </td>
-                    </tr>
-                    <tr>
-                      <th scope="row" className="border-bottom-0">
-                        <div className="d-flex align-items-center">
-                          <img
-                            src="https://i.imgur.com/Oj1iQUX.webp"
-                            className="img-fluid rounded-3"
-                            style={{ width: "120px" }}
-                            alt="Book"
-                          />
-                          <div className="flex-column ms-4">
-                            <p className="mb-2">
-                              Homo Deus: A Brief History of Tomorrow
-                            </p>
-                            <p className="mb-0">Yuval Noah Harari</p>
-                          </div>
-                        </div>
-                      </th>
-                      <td className="align-middle border-bottom-0">
-                        <p class="mb-0" style={{ "font-weight": "500" }}>
-                          Paperback
-                        </p>
-                      </td>
-                      <td className="align-middle border-bottom-0">
-                        <div className="d-flex flex-row">
-                          <button
-                            data-mdb-button-init
-                            data-mdb-ripple-init
-                            className="btn btn-link px-2"
-                            onClick="this.parentNode.querySelector('input[type=number]').stepDown()"
-                          >
-                            <i className="fas fa-minus"></i>
-                          </button>
-
-                          <input
-                            id="form1"
-                            min="0"
-                            name="quantity"
-                            value="1"
-                            type="number"
-                            class="form-control form-control-sm"
-                            style={{ width: "50px" }}
-                          />
-
-                          <button
-                            data-mdb-button-init
-                            data-mdb-ripple-init
-                            className="btn btn-link px-2"
-                            onClick="this.parentNode.querySelector('input[type=number]').stepUp()"
-                          >
-                            <i className="fas fa-plus"></i>
-                          </button>
-                        </div>
-                      </td>
-                      <td className="align-middle border-bottom-0">
-                        <p class="mb-0" style={{ "font-weight": "500" }}>
-                          $13.50
-                        </p>
-                      </td>
-                    </tr>
+                        </th>
+                        <td className="align-middle">
+                          <p class="mb-0" style={{ "font-weight": "500" }}>
+                            {c.quantity}
+                          </p>
+                        </td>
+                        <td className="align-middle">
+                          <div className="d-flex flex-row">Gr</div>
+                        </td>
+                        <td className="align-middle">
+                          <p class="mb-0" style={{ "font-weight": "500" }}>
+                            {new Intl.NumberFormat("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                            }).format(c.product.price * c.quantity)}
+                          </p>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -319,7 +260,12 @@ function Checkout() {
                         style={{ "font-weight": "500" }}
                       >
                         <p className="mb-2">Total (tax included)</p>
-                        <p className="mb-2">$26.48</p>
+                        <p className="mb-2">
+                          {new Intl.NumberFormat("vi-VN", {
+                            style: "currency",
+                            currency: "VND",
+                          }).format(totalPrice)}
+                        </p>
                       </div>
 
                       <button
@@ -327,10 +273,16 @@ function Checkout() {
                         data-mdb-button-init
                         data-mdb-ripple-init
                         className="btn btn-primary btn-block btn-lg"
+                        onClick={handlePayment}
                       >
                         <div className="d-flex justify-content-between">
                           <span>Checkout</span>
-                          <span>$26.48</span>
+                          <span>
+                            {new Intl.NumberFormat("vi-VN", {
+                              style: "currency",
+                              currency: "VND",
+                            }).format(totalPrice)}
+                          </span>
                         </div>
                       </button>
                     </div>

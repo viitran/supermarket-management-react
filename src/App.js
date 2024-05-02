@@ -14,10 +14,16 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserInfo, userActions } from "./redux/slide/user-slice.jsx";
 import { findUserInfo } from "./services/user.jsx";
+import UserApp from "./Components/UI/user/UserApp.jsx";
+import { cartActions } from "./redux/slide/cart-slice.jsx";
+import { getAllOrderOfUser } from "./services/cart-service.jsx";
+import ErrorPage from "./common/page/404Page.jsx";
+import CheckoutSuccessfully from "./Components/UI/checkout/CheckoutSuccessfully.jsx";
 function App() {
   const userInfo = useSelector(getUserInfo);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     if (!userInfo.userName) {
       findUserInfo()
@@ -30,6 +36,16 @@ function App() {
         });
     }
   }, []);
+
+  useEffect(() => {
+    getAllOrderOfUser().then((res) => {
+      const size = res.reduce((c, cart) => {
+        return c + cart.quantity;
+      }, 0);
+      dispatch(cartActions.setCartSize(size));
+    });
+  }, []);
+
   if (!loading) return <div>loading....</div>;
   return (
     <BrowserRouter>
@@ -43,12 +59,15 @@ function App() {
             <>
               <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />
+              <Route path="/payment-successfully" element={<CheckoutSuccessfully />} />
+              <Route path="/info" element={<UserApp />} />
             </>
           )}
         </Route>
 
         {!isLogin(userInfo) && <Route path="/login" element={<Login />} />}
         <Route path="/signup" element={<Register />} />
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
     </BrowserRouter>
   );

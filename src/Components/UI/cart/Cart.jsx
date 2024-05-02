@@ -7,6 +7,25 @@ function CartApp() {
   const [orders, setOrders] = useState();
   const [order, setOrder] = useState();
   const navigate = useNavigate();
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [displayedProductCount, setDisplayedProductCount] = useState(3);
+
+  const handleShowMoreProducts = () => {
+    if (displayedProductCount === orders.length) {
+      setDisplayedProductCount(3);
+    } else {
+      setDisplayedProductCount(orders.length);
+    }
+  };
+
+  useEffect(() => {
+    if (orders) {
+      const totalPrice = orders.reduce((total, order) => {
+        return total + order.product.price * order.quantity;
+      }, 0);
+      setTotalPrice(totalPrice);
+    }
+  }, [orders]);
 
   const AddProductToCart = (quantity, product) => {
     const orderDto = {
@@ -42,10 +61,11 @@ function CartApp() {
   };
 
   const handleNavigatePaymentPage = () => {
-    navigate("/checkout");
-  }
+    navigate(`/checkout`);
+  };
 
   if (!orders) return <div>loading...</div>;
+  const displayedProducts = orders.slice(0, displayedProductCount);
 
   return (
     <>
@@ -59,14 +79,16 @@ function CartApp() {
             <div className="col-12 row">
               <div className="col-3"></div>
               <div className="col-9  row mt-2 text-center">
-                <div className="col-5 ms-5">Tên sản phẩm</div>
+                <div className="col-5 ms-5">
+                  <h3>Tên sản phẩm</h3>
+                </div>
                 <div className="col-2">Giá</div>
                 <div className="col-2">Số lượng</div>
                 <div className="col ms-4">Thành tiền</div>
               </div>
             </div>
             <hr />
-            {orders.map((o, index) => (
+            {displayedProducts.map((o, index) => (
               <div
                 className="col-12 row mt-2 text-center "
                 key={index}
@@ -139,49 +161,55 @@ function CartApp() {
                 </div>
               </div>
             ))}
+            <div className="text-center mt-3">
+              <button
+                className="btn btn-primary"
+                onClick={handleShowMoreProducts}
+              >
+                {displayedProductCount === orders.length
+                  ? "Hiện ít hơn"
+                  : "Hiển thị thêm"}
+              </button>
+            </div>
           </div>
           <div className="col-3">
-            <div className="col-12">Thông tin đơn hàng</div>
-            <hr />
-            <div className="col-12">
-              Tên người nhận: 
-            </div>
-            <hr/>
-            <div className="col-12 row">
-              <div className="col-7">Tổng tiền: </div>
-              <div
-                className="col-5"
-                style={{ color: "red", fontWeight: "bold" }}
-              >
-                {new Intl.NumberFormat("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                }).format(
-                  orders.reduce(
-                    (total, order) =>
-                      total + order.product.price * order.quantity,
-                    0
-                  )
-                )}
+            <div style={{ position: "sticky", top: "100px" }}>
+              <div className="col-12">Thông tin đơn hàng</div>
+              <hr />
+              <div className="col-12 row">
+                <div className="col-7">Tổng tiền: </div>
+                <div
+                  className="col-5"
+                  style={{ color: "red", fontWeight: "bold" }}
+                >
+                  {new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }).format(totalPrice)}
+                </div>
               </div>
-            </div>
-            <hr />
-            <div className="col-12">
-              <li>
-                Phí vận chuyển sẽ được Nhân viên cửa hàng liên hệ báo lại cụ thể
-                theo địa chỉ của Khách hàng và chính sách giao hàng của
-                UNLIMITED
-              </li>
-            </div>
-            <div className="row text-center mt-3">
-              <button className="btn btn-primary"
-              onClick={handleNavigatePaymentPage}>Thanh toán</button>
-              <button
-                className="btn btn-primary mt-2"
-                onClick={handleNavigateProductList}
-              >
-                Tiếp tục mua sắm
-              </button>
+              <hr />
+              <div className="col-12">
+                <li>
+                  Phí vận chuyển sẽ được Nhân viên cửa hàng liên hệ báo lại cụ
+                  thể theo địa chỉ của Khách hàng và chính sách giao hàng của
+                  UNLIMITED
+                </li>
+              </div>
+              <div className="row text-center mt-3">
+                <button
+                  className="btn btn-primary"
+                  onClick={handleNavigatePaymentPage}
+                >
+                  Thanh toán
+                </button>
+                <button
+                  className="btn btn-primary mt-2"
+                  onClick={handleNavigateProductList}
+                >
+                  Tiếp tục mua sắm
+                </button>
+              </div>
             </div>
           </div>
         </div>

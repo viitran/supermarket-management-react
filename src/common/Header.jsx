@@ -159,10 +159,10 @@ function Header() {
                   {userInfo.fullName}
                 </MDBDropdownToggle>
                 <MDBDropdownMenu>
-                  <MDBDropdownItem link childTag="button">
-                    Action
+                  <MDBDropdownItem link childTag="button" onClick={handleShowUserInfo}>
+                    Thông tin cá nhân
                   </MDBDropdownItem>
-                  <MDBDropdownItem link childTag="button">
+                  <MDBDropdownItem  link childTag="button">
                     Another action
                   </MDBDropdownItem>
                   <MDBDropdownItem link childTag="button">
