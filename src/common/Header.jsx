@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
   getUserInfo,
@@ -10,7 +10,7 @@ import { useAppDispatch } from "../redux/redux-hook";
 import { useRef } from "react";
 import { commonActions, getSearch } from "../redux/slide/common-slice";
 import { isLogin } from "./render";
-import { getCartSize } from "../redux/slide/cart-slice";
+import { cartActions, getCartSize } from "../redux/slide/cart-slice";
 import { handleLogout } from "../services/auth-service";
 import { toast } from "react-toastify";
 import {
@@ -19,6 +19,7 @@ import {
   MDBDropdownToggle,
   MDBDropdownItem,
 } from "mdb-react-ui-kit";
+import { getAllOrderOfUser } from "../services/cart-service";
 
 function Header() {
   const userInfo = useSelector(getUserInfo);

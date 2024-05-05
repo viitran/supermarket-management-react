@@ -38,13 +38,16 @@ function App() {
   }, []);
 
   useEffect(() => {
-    getAllOrderOfUser().then((res) => {
-      const size = res.reduce((c, cart) => {
-        return c + cart.quantity;
-      }, 0);
-      dispatch(cartActions.setCartSize(size));
-    });
-  }, []);
+    console.log(userInfo.username);
+    if (userInfo.username) {
+      getAllOrderOfUser().then((res) => {
+        const size = res.reduce((c, cart) => {
+          return c + cart.quantity;
+        }, 0);
+        dispatch(cartActions.setCartSize(size));
+      });
+    }
+  }, [userInfo.username]);
 
   if (!loading) return <div>loading....</div>;
   return (
@@ -59,7 +62,7 @@ function App() {
             <>
               <Route path="/cart" element={<Cart />} />
               <Route path="/checkout" element={<Checkout />} />
-              <Route path="/payment-successfully" element={<CheckoutSuccessfully />} />
+              <Route path="/paymentCart/:id" element={<CheckoutSuccessfully />} />
               <Route path="/info" element={<UserApp />} />
             </>
           )}

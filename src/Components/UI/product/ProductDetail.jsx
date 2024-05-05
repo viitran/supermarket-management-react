@@ -11,17 +11,19 @@ import { ToastContainer, toast, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getAllProductsThatCanBeDishesForId } from "./../../../services/product-service";
 import { isLogin } from "../../../common/render";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getUserInfo } from "../../../redux/slide/user-slice";
+import { cartActions } from "../../../redux/slide/cart-slice";
+import { getAllOrderOfUser } from "../../../services/cart-service";
 function ProductDetail() {
   const userInfo = useSelector(getUserInfo);
   const [products, setProducts] = useState();
   const [product, setProduct] = useState();
   const params = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [count, setCount] = useState(1);
   const [cart, setCart] = useState();
-  const [cartSize, setCartSize] = useState(0);
   const [recommendDishes, setRecommendDishes] = useState();
   const handleNavigatePayment = () => {
     navigate("/payment");
@@ -42,14 +44,23 @@ function ProductDetail() {
     }
   };
 
+  const handleChangeSizeCart = () => {
+    getAllOrderOfUser().then((res) => {
+      const size = res.reduce((c, cart) => {
+        return c + cart.quantity;
+      }, 0);
+      dispatch(cartActions.setCartSize(size));
+    });
+  };
+
   const handleAddProductToCart = () => {
     const orderDto = {
       productId: product.id,
       quantity: count,
     };
-    console.log(orderDto);
-    setCartSize((prevCount) => prevCount + 1);
-    addProductToCart(orderDto);
+    addProductToCart(orderDto).then(() => {
+      handleChangeSizeCart();
+    });
     toast.success("Thêm vào giỏ hàng thành công!", {
       position: "top-center",
       autoClose: 5000,
@@ -63,34 +74,33 @@ function ProductDetail() {
     });
   };
 
-
-    useEffect(() => {
-      const { id } = params;
-      if (params && id) {
-        findProductById(id).then((res) => {
-          setProduct(res);
-          findProductByCateId(res.category.id).then((resp) => {
-            setProducts(resp);
-          });
-          getAllProductsThatCanBeDishesForId(id).then((r) => {
-            setRecommendDishes(r);
-          });
+  useEffect(() => {
+    const { id } = params;
+    if (params && id) {
+      findProductById(id).then((res) => {
+        setProduct(res);
+        findProductByCateId(res.category.id).then((resp) => {
+          setProducts(resp);
         });
+        getAllProductsThatCanBeDishesForId(id).then((r) => {
+          setRecommendDishes(r);
+        });
+      });
 
-        getCartDetail({ productId: id })
-          .then((res) => {
-            if (res && res.quantity !== undefined) {
-              setCart(res);
-            } else {
-              setCart({ quantity: 1 });
-            }
-          })
-          .catch((error) => {
-            console.error("Failed to fetch cart details:", error);
+      getCartDetail({ productId: id })
+        .then((res) => {
+          if (res && res.quantity !== undefined) {
+            setCart(res);
+          } else {
             setCart({ quantity: 1 });
-          });
-      }
-    }, [params]);
+          }
+        })
+        .catch((error) => {
+          console.error("Failed to fetch cart details:", error);
+          setCart({ quantity: 1 });
+        });
+    }
+  }, [params]);
 
   const handleAddToCart = (product) => {
     if (isLogin(userInfo)) {
@@ -106,7 +116,7 @@ function ProductDetail() {
 
   return (
     <>
-      <div className="container" >
+      <div className="container">
         <div className="col-12 row">
           <div className="col-6" style={{ borderRight: "solid 1px lightgrey" }}>
             <img
@@ -273,7 +283,6 @@ function ProductDetail() {
         ) : (
           <div className="mt-5 col-12">
             <h2>Các sản phẩm vừa xem</h2>
-            
           </div>
         )}
       </div>
