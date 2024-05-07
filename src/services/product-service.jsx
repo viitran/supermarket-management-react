@@ -50,3 +50,18 @@ export const getAllProductsThatCanBeDishesForId = async (id) => {
   );
   return res.data;
 };
+
+export const removeProductOnCart = async (id) => {
+  const res = await axiosClient.post(`http://localhost:8080/user/remove/${id}`);
+  return res.data;
+};
+
+export const findAllTopSelling = async () => {
+  const res = await axiosClient.get(`http://localhost:8080/public/selling`);
+  return res.data;
+};
+
+export const getOrderHistoryUser = async () => {
+  const res = await axiosClient.get(`http://localhost:8080/user/history`);
+  return res.data;
+};

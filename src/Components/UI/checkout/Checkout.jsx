@@ -5,12 +5,17 @@ import { createPayment } from "../../../services/payment-service";
 import Swal, { swal } from "sweetalert2/dist/sweetalert2.js";
 import { useSelector } from "react-redux";
 import { getUserInfo } from "../../../redux/slide/user-slice";
+const initPaymentValue = {
+  paymentStatusId: 2,
+  messageToSeller: "",
+};
 function Checkout() {
   const [carts, setCarts] = useState();
   const [totalPrice, setTotalPrice] = useState(0);
   const navigate = useNavigate();
   const params = useParams();
   const userInfo = useSelector(getUserInfo);
+  const [paymentValue, setPaymentValue] = useState(initPaymentValue);
 
   const getProductOrder = () => {
     getAllOrderOfUser().then((res) => {
@@ -31,6 +36,11 @@ function Checkout() {
       setTotalPrice(totalPrice);
     }
   }, [carts]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setPaymentValue({ ...paymentValue, [name]: value });
+  };
 
   const handlePayment = () => {
     console.log(userInfo);
@@ -64,204 +74,171 @@ function Checkout() {
 
   return (
     <>
-    <div className="col-12 row">
-      <div className="col-8">
-      <table className="table">
-                  <thead>
-                    <tr>
-                      <th scope="col" className="h5">
-                        Sản phẩm
-                      </th>
-                      <th scope="col">Số lượng</th>
-                      <th scope="col">Đơn vị</th>
-                      <th scope="col">Tạm tính</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {carts.map((c) => (
-                      <tr key={c.id}>
-                        <th scope="row">
-                          <div className="d-flex align-items-center">
-                            <img
-                              src={`data:image/jpeg;base64,${c.product.image}`}
-                              className="img-fluid rounded-3"
-                              style={{ width: "120px" }}
-                              alt="Book"
-                            />
-                            <div className="flex-column ms-4">
-                              <p className="mb-2"></p>
-                              <p className="mb-0">Daniel Kahneman</p>
-                            </div>
-                          </div>
-                        </th>
-                        <td className="align-middle">
-                          <p class="mb-0" style={{ "font-weight": "500" }}>
-                            {c.quantity}
-                          </p>
-                        </td>
-                        <td className="align-middle">
-                          <div className="d-flex flex-row">Gr</div>
-                        </td>
-                        <td className="align-middle">
-                          <p class="mb-0" style={{ "font-weight": "500" }}>
-                            {new Intl.NumberFormat("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            }).format(c.product.price * c.quantity)}
-                          </p>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-      </div>
-      <div className="col-4" style={{background: "white"}}>
-        {/* thong tin ca nhan + thanh toan */}
-        <div
-                        class="d-flex justify-content-between mb-4"
-                        style={{ "font-weight": "500" }}
-                      >
-                        <p className="mb-2">Total (tax included)</p>
-                        <p className="mb-2">
-                          {new Intl.NumberFormat("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          }).format(totalPrice)}
-                        </p>
-                      </div>
-
-                      <button
-                        type="button"
-                        data-mdb-button-init
-                        data-mdb-ripple-init
-                        className="btn btn-primary btn-block btn-lg"
-                        onClick={handlePayment}
-                      >
-                        <div className="d-flex justify-content-between">
-                          <span>Thanh toán</span>
-                          <span>
-                            {new Intl.NumberFormat("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            }).format(totalPrice)}
-                          </span>
-                        </div>
-                      </button>
-      </div>
-    </div>
-      {/* <section className="h-100 h-custom">
-        <div className="container h-100 py-5">
-          <div className="row d-flex justify-content-center align-items-center h-100">
-            <div className="col">
-              <div className="table-responsive">
-                <table className="table">
-                  <thead>
-                    <tr>
-                      <th scope="col" className="h5">
-                        Sản phẩm
-                      </th>
-                      <th scope="col">Số lượng</th>
-                      <th scope="col">Đơn vị</th>
-                      <th scope="col">Tạm tính</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {carts.map((c) => (
-                      <tr key={c.id}>
-                        <th scope="row">
-                          <div className="d-flex align-items-center">
-                            <img
-                              src={`data:image/jpeg;base64,${c.product.image}`}
-                              className="img-fluid rounded-3"
-                              style={{ width: "120px" }}
-                              alt="Book"
-                            />
-                            <div className="flex-column ms-4">
-                              <p className="mb-2"></p>
-                              <p className="mb-0">Daniel Kahneman</p>
-                            </div>
-                          </div>
-                        </th>
-                        <td className="align-middle">
-                          <p class="mb-0" style={{ "font-weight": "500" }}>
-                            {c.quantity}
-                          </p>
-                        </td>
-                        <td className="align-middle">
-                          <div className="d-flex flex-row">Gr</div>
-                        </td>
-                        <td className="align-middle">
-                          <p class="mb-0" style={{ "font-weight": "500" }}>
-                            {new Intl.NumberFormat("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            }).format(c.product.price * c.quantity)}
-                          </p>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+      <div className=" p-5 shadow-0 col-12 row">
+        <div className="col-8 row border mb-5">
+          <div className="col-12">
+            <h3>Thông tin đơn hàng</h3>
+          </div>
+          <div className="col-12 row">
+            <div className="col-6 mt-2">
+              <div className="form-control" style={{ border: "none" }}>
+                <small>Họ và tên</small>
+                <input
+                  type="text"
+                  style={{ fontWeight: "bold" }}
+                  placeholder="Nguyen Van A"
+                  className="form-control"
+                  defaultValue={userInfo.fullName}
+                />
               </div>
-
-              <div
-                class="card shadow-2-strong mb-5 mb-lg-0"
-                style={{ "border-radius": "16px" }}
-              >
-                <div className="card-body p-4">
-                  <div className="row">
-                   
-                    <div className="col-lg-4 col-xl-3">
-                      <div
-                        class="d-flex justify-content-between"
-                        style={{ "font-weight": "500" }}
-                      >
-                        <p className="mb-2">Subtotal</p>
-                        <p className="mb-2">$23.49</p>
-                      </div>
-
-                    
-
-                      <hr className="my-4" />
-
-                      <div
-                        class="d-flex justify-content-between mb-4"
-                        style={{ "font-weight": "500" }}
-                      >
-                        <p className="mb-2">Total (tax included)</p>
-                        <p className="mb-2">
-                          {new Intl.NumberFormat("vi-VN", {
-                            style: "currency",
-                            currency: "VND",
-                          }).format(totalPrice)}
-                        </p>
-                      </div>
-
-                      <button
-                        type="button"
-                        data-mdb-button-init
-                        data-mdb-ripple-init
-                        className="btn btn-primary btn-block btn-lg"
-                        onClick={handlePayment}
-                      >
-                        <div className="d-flex justify-content-between">
-                          <span>Thanh toán</span>
-                          <span>
-                            {new Intl.NumberFormat("vi-VN", {
-                              style: "currency",
-                              currency: "VND",
-                            }).format(totalPrice)}
-                          </span>
-                        </div>
-                      </button>
-                    </div>
-                  </div>
+            </div>
+            <div className="col-6 mt-2">
+              <div className="form-control" style={{ border: "none" }}>
+                <small>Số điện thoại</small>
+                <input
+                  type="text"
+                  style={{ fontWeight: "bold" }}
+                  placeholder="09xxxxxxxx"
+                  className="form-control"
+                  defaultValue={userInfo.phoneNumber}
+                />
+              </div>
+            </div>
+            <div className="col-6 mt-2">
+              <div className="form-control" style={{ border: "none" }}>
+                <small>Địa chỉ nhận hàng</small>
+                <textarea
+                  style={{
+                    fontWeight: "bold",
+                    overflow: "hidden",
+                    resize: "none",
+                  }}
+                  placeholder="XX Đường ABC, Quận BCZ, Thành phố X"
+                  className="form-control"
+                  defaultValue={userInfo.address}
+                />
+              </div>
+            </div>
+            <div className="col-6 mt-2">
+              <div className="form-control" style={{ border: "none" }}>
+                <small>Email</small>
+                <input
+                  type="email"
+                  style={{ fontWeight: "bold" }}
+                  placeholder="abc@gmail.com"
+                  className="form-control"
+                  defaultValue={userInfo.email}
+                />
+              </div>
+            </div>
+            <hr className="mt-3" />
+            <div className="col-12">
+              <h4>Ghi chú cho đơn hàng</h4>
+              <div className="mt-3">
+                <div className="form p-2">
+                  <small>
+                    Hãy để lại lời nhắn cho nhân viên giao hàng và cửa hàng(nếu
+                    có):
+                  </small>
+                  <textarea
+                    className="form-control"
+                    id="textAreaExample1"
+                    style={{ overflow: "hidden", resize: "none" }}
+                    name="messageToSeller"
+                    onChange={handleChange}
+                  ></textarea>
                 </div>
               </div>
             </div>
+
+            <div className="col-8"></div>
+            <div className="button-group col-4 p-3">
+              <button
+                className="btn btn-light border me-2"
+                onClick={() => navigate("/cart")}
+              >
+                Hủy
+              </button>
+              <button
+                className="btn btn-success shadow-0 border"
+                onClick={handlePayment}
+              >
+                Thanh toán
+              </button>
+            </div>
           </div>
         </div>
-      </section> */}
+        <div
+          className="col-4 "
+          style={{ overflowY: "auto", maxHeight: "470px" }}
+        >
+          <div className="ms-lg-4 mt-4 mt-lg-0" style={{ maxWidth: "320px" }}>
+            <h6 className="mb-3">Tổng</h6>
+            <div className="d-flex justify-content-between">
+              <p className="mb-2">Tổng các sản phẩm</p>
+              <p className="mb-2">
+                {totalPrice.toLocaleString("it-IT", {
+                  style: "currency",
+                  currency: "VND",
+                })}
+              </p>
+            </div>
+            <div className="d-flex justify-content-between">
+              <p className="mb-2">Phí vận chuyển</p>
+              <p className="mb-2">+ 30.000 VND</p>
+            </div>
+            <hr />
+            <div className="d-flex justify-content-between">
+              <p className="mb-2">Tổng tiền</p>
+              <p className="mb-2 fw-bold" style={{ color: "red" }}>
+                {(totalPrice + 30000).toLocaleString("it-IT", {
+                  style: "currency",
+                  currency: "VND",
+                })}
+              </p>
+            </div>
+
+            <hr />
+            <h6 className="text-dark my-4">Sản phẩm đã chọn</h6>
+
+            {carts.map((cart) => (
+              <div className="d-flex align-items-center mb-4" key={cart.id}>
+                <div className="me-3 position-relative">
+                  <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill badge-secondary">
+                    {cart.quantity}
+                  </span>
+                  <img
+                    src={`data:image/jpeg;base64,${cart.product.image}`}
+                    style={{ width: "96px", height: "96px" }}
+                    className="img-sm rounded border"
+                  />
+                </div>
+                <div className="">
+                  <a href="#" className="nav-link">
+                    {cart.product.name} <br />
+                    <small className="text-muted text-nowrap">
+                      {cart.product.price.toLocaleString("it-IT", {
+                        style: "currency",
+                        currency: "VND",
+                      })}
+                    </small>
+                  </a>
+                  <div className="price text-muted">
+                    Tổng tiền:{" "}
+                    {(cart.product.price * cart.quantity).toLocaleString(
+                      "it-IT",
+                      {
+                        style: "currency",
+                        currency: "VND",
+                      }
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
     </>
   );
 }

@@ -18,6 +18,10 @@ function CartApp() {
     }
   };
 
+  useEffect(()=>{
+    document.title = "Đơn hàng của bạn"
+  })
+
   useEffect(() => {
     if (orders) {
       const totalPrice = orders.reduce((total, order) => {
@@ -73,19 +77,22 @@ function CartApp() {
       <div className=" container">
         <div className="col-12 row">
           <div className="col-9">
-            <div className="col-12">
-              <h1>Giỏ hàng của bạn</h1>
-            </div>
             <div className="col-12 row">
-              <div className="col-3"></div>
-              <div className="col-9  row mt-2 text-center">
+              {/* <div className="col-1"></div>
+              <div className="col-11  row mt-2 text-center">
                 <div className="col-5 ms-5">
-                  <h3>Tên sản phẩm</h3>
+                  <h4>Tên sản phẩm</h4>
                 </div>
-                <div className="col-2">Giá</div>
-                <div className="col-2">Số lượng</div>
-                <div className="col ms-4">Thành tiền</div>
-              </div>
+                <div className="col-1">
+                  <h4>Giá</h4>
+                </div>
+                <div className="col-1">
+                  <h4>Số lượng</h4>
+                </div>
+                <div className="col-3 ms-4">
+                  <h4>Thành tiền</h4>
+                </div>
+              </div> */}
             </div>
             <hr />
             {displayedProducts.map((o, index) => (
@@ -201,7 +208,7 @@ function CartApp() {
                   className="btn btn-primary"
                   onClick={handleNavigatePaymentPage}
                 >
-                  Thanh toán
+                 Tiền hành thanh toán
                 </button>
                 <button
                   className="btn btn-primary mt-2"

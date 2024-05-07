@@ -19,6 +19,7 @@ import { cartActions } from "./redux/slide/cart-slice.jsx";
 import { getAllOrderOfUser } from "./services/cart-service.jsx";
 import ErrorPage from "./common/page/404Page.jsx";
 import CheckoutSuccessfully from "./Components/UI/checkout/CheckoutSuccessfully.jsx";
+import CartTest from "./Components/UI/cart/TestCart.jsx";
 function App() {
   const userInfo = useSelector(getUserInfo);
   const dispatch = useDispatch();
@@ -38,7 +39,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    console.log(userInfo.username);
+    console.log(userInfo.id);
     if (userInfo.username) {
       getAllOrderOfUser().then((res) => {
         const size = res.reduce((c, cart) => {
@@ -60,10 +61,11 @@ function App() {
           <Route path="/category/:id" element={<CategoryApp />} />
           {isLogin(userInfo) && (
             <>
-              <Route path="/cart" element={<Cart />} />
+              {/* <Route path="/cart" element={<Cart />} /> */}
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/paymentCart/:id" element={<CheckoutSuccessfully />} />
               <Route path="/info" element={<UserApp />} />
+              <Route path="/cart" element={<CartTest />} />
             </>
           )}
         </Route>

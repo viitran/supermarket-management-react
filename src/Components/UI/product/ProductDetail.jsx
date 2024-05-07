@@ -135,33 +135,33 @@ function ProductDetail() {
                 className="col-3"
                 style={{ borderRight: "solid 1px lightgrey" }}
               >
-                Mã sản phẩm: <small>{product.code}</small>
+               <span> Mã sản phẩm: <small><b>{product.code}</b></small></span>
               </div>
 
               <div className="col-9">
                 Tình trạng:{" "}
                 <small>
-                  {product.quantity >= 65
+                  <b>{product.quantity >= 65
                     ? "Còn hàng"
                     : product.quantity >= 1 && product.quantity <= 64
                     ? "Sắp hết hàng"
-                    : "Hết hàng"}
+                    : "Hết hàng"}</b>
                 </small>
               </div>
             </div>
             <div className="col-12 mt-3">
               <h3>Thông tin sản phẩm:</h3>
               <p>{product.description}</p>
-              <h6>Số lượng tồn kho: {product.quantity}</h6>
+              <span><b>Số lượng tồn kho:</b> {product.quantity}</span>
             </div>
             <div className="col-12 mt-3">
-              <h6>
+              <span>
                 Giá:{" "}
-                {new Intl.NumberFormat("vi-VN", {
+                <b>{new Intl.NumberFormat("vi-VN", {
                   style: "currency",
                   currency: "VND",
-                }).format(product.price)}
-              </h6>
+                }).format(product.price)}</b>
+              </span>
             </div>
             <div className="col-12">
               <button
