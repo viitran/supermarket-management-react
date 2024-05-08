@@ -29,6 +29,10 @@ function ProductDetail() {
     navigate("/payment");
   };
 
+  useEffect(() => {
+    document.title = "Chi tiết sản phẩm";
+  });
+
   const handleProductDetail = (id) => {
     navigate(`/product/${id}`);
     window.scrollTo(0, 0);
@@ -117,96 +121,124 @@ function ProductDetail() {
   return (
     <>
       <div className="container">
-        <div className="col-12 row">
-          <div className="col-6" style={{ borderRight: "solid 1px lightgrey" }}>
+        <div className="col-lg-12 col-md-12 col-sm-12 row">
+          <div
+            className="col-lg-6 col-md-6 col-sm-12"
+            style={{ borderRight: "solid 1px lightgrey" }}
+          >
             <img
               src={`data:image/jpeg;base64,${product.image}`}
               alt=""
-              style={{ width: "100%", height: "100%" }}
+              style={{
+                maxWidth: "100%",
+                maxHeight: "100%",
+                display: "block",
+                margin: "auto",
+              }}
             />
           </div>
           {/* thong tin */}
-          <div className="col-6">
-            <div className="col-12">
+          <div className="col-lg-6 col-md-6 col-sm-12">
+            <div className="col-lg-12 ">
               <h1>{product.name}</h1>
             </div>
-            <div className="col-12 row">
+            <div className="col-lg-12 col-md-12 col-sm-12 row">
               <div
-                className="col-3"
+                className="col-lg-6 col-md-6 col-sm-6"
                 style={{ borderRight: "solid 1px lightgrey" }}
               >
-               <span> Mã sản phẩm: <small><b>{product.code}</b></small></span>
+                <span>
+                  Mã sản phẩm:{" "}
+                  <small>
+                    <b>{product.code}</b>
+                  </small>
+                </span>
               </div>
 
-              <div className="col-9">
+              <div className="col-lg-6 col-md-6 col-sm-6">
                 Tình trạng:{" "}
                 <small>
-                  <b>{product.quantity >= 65
-                    ? "Còn hàng"
-                    : product.quantity >= 1 && product.quantity <= 64
-                    ? "Sắp hết hàng"
-                    : "Hết hàng"}</b>
+                  <b
+                    style={
+                      product.quantity >= 65
+                        ? { color: "green" }
+                        : product.quantity >= 1 && product.quantity <= 64
+                        ? { color: "#FD7702" }
+                        : { color: "red" }
+                    }
+                  >
+                    {product.quantity >= 65
+                      ? "Còn hàng"
+                      : product.quantity >= 1 && product.quantity <= 64
+                      ? "Sắp hết hàng"
+                      : "Hết hàng"}
+                  </b>
                 </small>
               </div>
             </div>
-            <div className="col-12 mt-3">
+            <div className="col-lg-12 mt-3">
               <h3>Thông tin sản phẩm:</h3>
               <p>{product.description}</p>
-              <span><b>Số lượng tồn kho:</b> {product.quantity}</span>
-            </div>
-            <div className="col-12 mt-3">
               <span>
-                Giá:{" "}
-                <b>{new Intl.NumberFormat("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                }).format(product.price)}</b>
+                Số lượng tồn kho:<b> {product.quantity}</b>
               </span>
+              <br />
+              {/* {isLogin(userInfo) && (<span>Số lượng của sản phẩm này hiện có trong giỏ hàng: <b></b> </span>)} */}
             </div>
-            <div className="col-12">
-              <button
-                style={{
-                  backgroundColor: "white",
-                  border: "1px solid #ccc",
-                  padding: "5px 10px",
-                  cursor: "pointer",
-                  marginRight: "5px",
-                  borderRadius: "5px",
-                }}
-                onClick={decrement}
-                disabled={count <= 1}
-              >
-                -
-              </button>
-              <span style={{ margin: "0 10px" }}>{count}</span>
-              <button
-                style={{
-                  backgroundColor: "white",
-                  border: "1px solid #ccc",
-                  padding: "5px 10px",
-                  cursor: "pointer",
-                  marginRight: "5px",
-                  borderRadius: "5px",
-                }}
-                onClick={increment}
-                disabled={count + cart.quantity >= product.quantity}
-              >
-                +
-              </button>
+            <div className="mt-3">
+              <h4>
+                Giá:{" "}
+                <b style={{ color: "red" }}>
+                  {new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }).format(product.price)}
+                </b>
+              </h4>
             </div>
-            <div className="col-12 mt-4">
-              <Button className="me-2" onClick={handleNavigatePayment}>
-                Mua ngay
-              </Button>
-              <Button onClick={handleAddToCart}>Thêm vào giỏ hàng</Button>
+            <div className="col-lg-12 col-md-12 col-xs-12 row">
+              <div className="col-lg-4 col-md-12 col-xs-12 col-12 mt-3">
+                <button
+                  style={{
+                    backgroundColor: "white",
+                    border: "1px solid #ccc",
+                    padding: "5px 10px",
+                    cursor: "pointer",
+                    marginRight: "5px",
+                    borderRadius: "5px",
+                  }}
+                  onClick={decrement}
+                  disabled={count <= 1}
+                >
+                  -
+                </button>
+                <span style={{ margin: "0 10px" }}>{count}</span>
+                <button
+                  style={{
+                    backgroundColor: "white",
+                    border: "1px solid #ccc",
+                    padding: "5px 10px",
+                    cursor: "pointer",
+                    marginRight: "5px",
+                    borderRadius: "5px",
+                  }}
+                  onClick={increment}
+                  disabled={count + cart.quantity >= product.quantity}
+                >
+                  +
+                </button>
+              </div>
+              <div className="col-lg-8 col-md-12 col-xs-12 col-12 mt-3">
+                <Button className="btn" style={{width: "100%"}} onClick={handleAddToCart}>Thêm vào giỏ hàng</Button>
+              </div>
             </div>
           </div>
         </div>
         <hr />
         <h2 className="text-center">Có thể bạn thích</h2>
-        <div className="col-12 row">
+        <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12 row">
           {products.map((product, index) => (
-            <div className="col-2 p-2 box text-center" key={index}>
+            <div className="col-lg-3 col-md-2 col-sm-2 p-2 box text-center" key={product.id}>
               <div>
                 <img
                   src={`data:image/jpeg;base64,${product.image}`}

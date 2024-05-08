@@ -1,7 +1,10 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { findProductByCateId } from "../../../../services/product-service";
+import Breadcrumb from "react-bootstrap/Breadcrumb";
+import { getCateById } from "../../../../services/categories-service";
+
 const initParam = {
   page: 0,
   size: 100,
@@ -14,20 +17,34 @@ const initParam = {
 };
 function CategoryApp() {
   const params = useParams();
-  const [categories, setCategories] = useState();
+  const [products, setProducts] = useState();
   const [param, setParam] = useState(initParam);
+  const [category, setCategory] = useState();
+  const navigate = useNavigate();
 
-  
+  useEffect(() => {
+    if (category && category.name) {
+        document.title = `Sản phẩm ${category.name}`;
+    }
+}, [category]);
 
   useEffect(() => {
     const { id } = params;
     if (params && id) {
       findProductByCateId(id).then((res) => {
-        setCategories(res);
+        setProducts(res);
         console.log(res);
       });
+      getCateById(id).then((resp) => {
+        setCategory(resp);
+      });
     }
-  }, [params])
+  }, [params]);
+
+  const handleAddProductToCart = (id) => {
+    navigate(`/product/${id}`);
+  };
+
 
   const handlePriceFilterChange = (e) => {
     const { name, value } = e.target;
@@ -87,39 +104,21 @@ function CategoryApp() {
     setParam(dt);
   };
 
-  if(!categories) return <div>loading...</div>
+  if (!products) return <div>loading...</div>;
   return (
     <>
       <hr />
-      <div className="p-3">
-        <NavLink to="/" style={{ color: "black" }}>
-          Trang Chủ
-        </NavLink>{" "}
-        {">"} Tất cả sản phẩm{" "}
-      </div>
-      {/* <div className="col-12 row p-3 text-center">
-        {category.map((cate, index) => (
-          <div className="col-lg-3 col-md-12 col-sm-12" key={cate.id}>
-            <button
-              className="button-cate"
-              onClick={() => handleNavigateCate(cate.id)}
-            >
-              <img
-                src={`data:image/jpeg;base64,${cate.image}`}
-                alt=""
-                style={{ width: "50px", height: "50px" }}
-                className="p-1"
-              />{" "}
-              {cate.name}
-            </button>
-          </div>
-        ))}
-      </div> */}
+      <Breadcrumb className="p-2">
+        <Breadcrumb.Item href="/">Trang chủ</Breadcrumb.Item>
+        <Breadcrumb.Item active> {category.name}</Breadcrumb.Item>
+      </Breadcrumb>
       <section>
         <div className="p-5">
           <div className="row mt-3">
             <div className="col-12">
-              <h1>Tất cả sản phẩm</h1>
+              <h1>
+                Sản phẩm {category.name}
+              </h1>
             </div>
             <div className="col-12 row mt-3 ms-4">
               <div className="col-6 row p-2">
@@ -162,40 +161,37 @@ function CategoryApp() {
               </div>
             </div>
             <div className="col-12 row ms-2 justify-content-center text-center">
-            {categories.map((c, index) => (
-            <div className="col-2 p-2 box text-center" key={c.id}>
-              <div>
-                <img
-                  src={`data:image/jpeg;base64,${c.image}`}
-                  alt=""
-                  style={{ height: "100%", width: "100%" }}
-                />
-              </div>
-              <div
-                className="mt-3"
-                style={{ fontSize: "14px", fontWeight: "500" }}
-              >
-                {c.name.length > 23
-                  ? `${c.name.slice(0, 23)}...`
-                  : c.name}
-              </div>
-              <div>
-                {new Intl.NumberFormat("vi-VN", {
-                  style: "currency",
-                  currency: "VND",
-                }).format(c.price)}
-              </div>
-              <div className="mt-3">
-                <button
-                //   onClick={() => handleProductDetail(c.id)}
-                  className="button-81"
-                  role="button"
-                >
-                  Chọn Mua
-                </button>
-              </div>
-            </div>
-          ))}
+              {products.map((c) => (
+                <div className="col-2 box p-2 text-center" key={c.id}>
+                  <div>
+                    <img
+                      src={`data:image/jpeg;base64,${c.image}`}
+                      alt=""
+                      style={{ height: "100%", width: "100%" }}
+                    />
+                  </div>
+                  <div
+                    className="mt-3"
+                    style={{ fontSize: "14px", fontWeight: "500" }}
+                  >
+                    {c.name.length > 23 ? `${c.name.slice(0, 23)}...` : c.name}
+                  </div>
+                  <div>
+                    {new Intl.NumberFormat("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                    }).format(c.price)}
+                  </div>
+                  <div className="mt-3">
+                  <button
+                        className="button-81"
+                        onClick={() => handleAddProductToCart(c.id)}
+                      >
+                        Chi tiết
+                      </button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

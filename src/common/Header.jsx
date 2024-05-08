@@ -80,14 +80,15 @@ function Header() {
         style={{ background: "white" }}
       >
         <div className="col-12 row">
-          <div className="ms-2 col-2" onClick={handleNavigateHomePage}>
+          <div className="col-2" 
+          onClick={handleNavigateHomePage}>
             <img
               src="/img/HomePage/logo.jpg"
               alt=""
               style={{ width: "100%", height: "100%" }}
             />
           </div>
-          <div className="mt-3 ms-1  col-4">
+          <div className="col-4">
             <input
               name="searchValue"
               className="form-control"
@@ -97,7 +98,7 @@ function Header() {
               onChange={handleSearchChange}
             />
           </div>
-          <div className="mt-3 col-2">
+          <div className="col-2">
             {searchValue && (
               <button
                 style={{ border: "none", backgroundColor: "white" }}
@@ -121,8 +122,8 @@ function Header() {
               />
             </button>
           </div>
-          <div className="mt-3 col">
             {isLogin(userInfo) && (
+            <div className="col-2">
               <div className="col">
                 <button
                   className=" rounded py-1 px-3 nav-link d-flex align-items-center"
@@ -137,9 +138,9 @@ function Header() {
                   <p className="d-none d-md-block mb-0">{totalQuantity}</p>
                 </button>
               </div>
-            )}
           </div>
-          <div className="mt-3 col-3">
+            )}
+          <div className={`${isLogin(userInfo) ? 'col-2' : ' col-4'}`}>
             {!isLogin(userInfo) && (
               <button
                 className="me-1 rounded py-1 px-3 nav-link d-flex align-items-center"
@@ -162,12 +163,6 @@ function Header() {
                 <MDBDropdownMenu>
                   <MDBDropdownItem link childTag="button" onClick={handleShowUserInfo}>
                     Thông tin cá nhân
-                  </MDBDropdownItem>
-                  <MDBDropdownItem  link childTag="button">
-                    Another action
-                  </MDBDropdownItem>
-                  <MDBDropdownItem link childTag="button">
-                    Something else here
                   </MDBDropdownItem>
                   <MDBDropdownItem divider />
                   <MDBDropdownItem

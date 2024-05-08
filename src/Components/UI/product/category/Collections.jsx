@@ -3,9 +3,8 @@ import { getAllProduct } from "../../../../services/product-service";
 import { getCategories } from "../../../../services/categories-service";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { getUserInfo } from "../../../../redux/slide/user-slice";
-import { useAppDispatch } from "../../../../redux/redux-hook";
 import { getSearch } from "../../../../redux/slide/common-slice";
+import Breadcrumb from "react-bootstrap/Breadcrumb";
 
 const initParam = {
   page: 0,
@@ -21,14 +20,16 @@ const initParam = {
 function Categories() {
   const [categories, setCategories] = useState();
   const [products, setProducts] = useState();
-  const userInfo = useSelector(getUserInfo);
-  const dispatch = useAppDispatch();
   const searchRedux = useSelector(getSearch);
   const [param, setParam] = useState(initParam);
   const [showAllProducts, setShowAllProducts] = useState(false);
   // const [cartCount, setCartCount] = useState(0);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    document.title = "Tất cả sản phẩm";
+  });
+  
   const handleAddProductToCart = (id) => {
     navigate(`/product/${id}`);
   };
@@ -122,34 +123,24 @@ function Categories() {
   return (
     <>
       <hr />
-      <div className="p-3">
-        <NavLink to="/" style={{ color: "black" }}>
-          Trang Chủ
-        </NavLink>{" "}
-        {">"} Tất cả sản phẩm{" "}
-      </div>
+      <Breadcrumb className="p-2">
+        <Breadcrumb.Item href="/">Trang chủ</Breadcrumb.Item>
+        <Breadcrumb.Item active>Tất cả sản phẩm </Breadcrumb.Item>
+      </Breadcrumb>
       <section>
         <div className="p-5">
-          <div className="row mt-3">
-            <div className="col-12">
-              <h1>Tất cả sản phẩm</h1>
-            </div>
+          <div className="col-lg-12 row mt-3">
             <div className="col-12 row mt-3 ms-4">
-              <div className="col-6 row p-2">
-                <div className="col-3 ">
+              <div className="col-lg-6 col-md-6 col-sm-12 row p-2">
+                <div className="col-5 col-md-3 ">
                   <img
                     src="/img/HomePage/filter.png"
                     alt=""
                     style={{ width: "30px", height: "30px" }}
                   />{" "}
                   BỘ LỌC {"   "}
-                  <img
-                    src="/img/HomePage/line.png"
-                    alt=""
-                    style={{ height: "30px", width: "30px" }}
-                  />
                 </div>
-                <div className="col-7">
+                <div className="col-md-9 col-7">
                   <select name="priceFrom" onChange={handlePriceFilterChange}>
                     <option value="">Lọc giá</option>
                     <option value="under100">Dưới 100.000₫</option>
@@ -159,9 +150,9 @@ function Categories() {
                   </select>
                 </div>
               </div>
-              <div className="col-6 row">
-                <div className="col-9"></div>
-                <div className="col-3">
+              <div className="col-lg-6 col-md-6 col-sm-12 row">
+                <div className="col-md-9 col-7"></div>
+                <div className="col-md-3 col-5">
                   <select name="sortBy" onChange={handleSortChange}>
                     <option value="">Sắp xếp</option>
                     <option value="priceD">Giá: Giảm dần</option>
@@ -174,51 +165,54 @@ function Categories() {
                 </div>
               </div>
             </div>
-            <div className="col-12 row ms-2 justify-content-center text-center">
-              {displayedProducts.map((product, index) => (
-                <div className="col-2 p-2 box" key={index}>
-                  <div>
-                    <img
-                      src={`data:image/jpeg;base64,${product.image}`}
-                      alt=""
-                      style={{ height: "100%", width: "100%" }}
-                    />
-                  </div>
-                  <div
-                    className="mt-3"
-                    style={{ fontSize: "14px", fontWeight: "500" }}
-                  >
-                    {product.name.length > 23
-                      ? `${product.name.slice(0, 23)}...`
-                      : product.name}
-                  </div>
-                  <div>
-                    {new Intl.NumberFormat("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    }).format(product.price)}
-                  </div>
-                  <div className="mt-3">
-                    <button
-                      className="button-81"
-                      role="button"
-                      onClick={() => handleAddProductToCart(product.id)}
+            <div className="col-lg-12 row ms-2 justify-content-center text-center">
+              {displayedProducts.map((product) => (
+                <div className="col-lg-3 col-md-4 col-sm-6 p-2 box" key={product.id}>
+                  <div className="product-info">
+                    <div>
+                      <img
+                        src={`data:image/jpeg;base64,${product.image}`}
+                        alt=""
+                        style={{ height: "100%", width: "100%" }}
+                      />
+                    </div>
+                    <div
+                      className=""
+                      style={{ fontSize: "14px", fontWeight: "500" }}
                     >
-                      Chọn Mua
-                    </button>
+                      {product.name.length > 23
+                        ? `${product.name.slice(0, 23)}...`
+                        : product.name}
+                    </div>
+                    <div>
+                      {new Intl.NumberFormat("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      }).format(product.price)}
+                    </div>
+                    <div className="">
+                      <button
+                        className="button-81"
+                        onClick={() => handleAddProductToCart(product.id)}
+                      >
+                        Chi tiết
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
             {/* Show more/Show less button */}
-            <div className="text-center mt-3">
-              <button
-                className="btn btn-primary"
-                onClick={() => setShowAllProducts(!showAllProducts)}
-              >
-                {showAllProducts ? "Hiện ít hơn" : "Hiện thị thêm"}
-              </button>
-            </div>
+            {!showAllProducts && (
+              <div className="text-center mt-3">
+                <button
+                  className="btn btn-primary"
+                  onClick={() => setShowAllProducts(true)}
+                >
+                  Hiển thị thêm
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </section>

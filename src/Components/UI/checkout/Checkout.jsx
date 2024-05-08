@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { getAllOrderOfUser } from "./../../../services/cart-service";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { createPayment } from "../../../services/payment-service";
-import Swal, { swal } from "sweetalert2/dist/sweetalert2.js";
+import Swal from "sweetalert2/dist/sweetalert2.js";
 import { useSelector } from "react-redux";
 import { getUserInfo } from "../../../redux/slide/user-slice";
 const initPaymentValue = {
   paymentStatusId: 2,
-  messageToSeller: "",
+  message: "",
+  address: "",
 };
 function Checkout() {
   const [carts, setCarts] = useState();
@@ -16,6 +17,10 @@ function Checkout() {
   const params = useParams();
   const userInfo = useSelector(getUserInfo);
   const [paymentValue, setPaymentValue] = useState(initPaymentValue);
+
+  useEffect(() => {
+    document.title = "Kiểm tra đơn hàng";
+  });
 
   const getProductOrder = () => {
     getAllOrderOfUser().then((res) => {
@@ -44,8 +49,8 @@ function Checkout() {
 
   const handlePayment = () => {
     console.log(userInfo);
-    console.log("test");
-    createPayment(totalPrice, userInfo.id)
+
+    createPayment(totalPrice, userInfo.id,paymentValue)
       .then((res) => {
         window.location.href = res;
       })
@@ -74,13 +79,13 @@ function Checkout() {
 
   return (
     <>
-      <div className=" p-5 shadow-0 col-12 row">
-        <div className="col-8 row border mb-5">
-          <div className="col-12">
+      <div className=" p-5 shadow-0 col-lg-12 col-md-12 col-xs-12 col-sm-12 row">
+        <div className="col-lg-8 col-md-12 col-xs-12 col-sm-12 row border mb-5">
+          <div className="col-lg-12">
             <h3>Thông tin đơn hàng</h3>
           </div>
-          <div className="col-12 row">
-            <div className="col-6 mt-2">
+          <div className="col-lg-12 col-md-12 col-xs-12 col-sm-12 row">
+            <div className="col-lg-6 col-md-6 col-xs-6 mt-2">
               <div className="form-control" style={{ border: "none" }}>
                 <small>Họ và tên</small>
                 <input
@@ -92,7 +97,7 @@ function Checkout() {
                 />
               </div>
             </div>
-            <div className="col-6 mt-2">
+            <div className="col-lg-6 col-md-6 col-xs-6  mt-2">
               <div className="form-control" style={{ border: "none" }}>
                 <small>Số điện thoại</small>
                 <input
@@ -104,7 +109,7 @@ function Checkout() {
                 />
               </div>
             </div>
-            <div className="col-6 mt-2">
+            <div className="col-lg-6 col-md-6 col-xs-6 mt-2">
               <div className="form-control" style={{ border: "none" }}>
                 <small>Địa chỉ nhận hàng</small>
                 <textarea
@@ -116,10 +121,12 @@ function Checkout() {
                   placeholder="XX Đường ABC, Quận BCZ, Thành phố X"
                   className="form-control"
                   defaultValue={userInfo.address}
+                  name="address"
+                  onChange={handleChange}
                 />
               </div>
             </div>
-            <div className="col-6 mt-2">
+            <div className="col-lg-6 col-md-6 col-xs-6  mt-2">
               <div className="form-control" style={{ border: "none" }}>
                 <small>Email</small>
                 <input
@@ -132,7 +139,7 @@ function Checkout() {
               </div>
             </div>
             <hr className="mt-3" />
-            <div className="col-12">
+            <div className="col-lg-12 col-md-12 col-xs-12">
               <h4>Ghi chú cho đơn hàng</h4>
               <div className="mt-3">
                 <div className="form p-2">
@@ -144,15 +151,14 @@ function Checkout() {
                     className="form-control"
                     id="textAreaExample1"
                     style={{ overflow: "hidden", resize: "none" }}
-                    name="messageToSeller"
+                    name="message"
                     onChange={handleChange}
                   ></textarea>
                 </div>
               </div>
             </div>
 
-            <div className="col-8"></div>
-            <div className="button-group col-4 p-3">
+            <div className="text-center justify-center col-lg-12 col-md-12 col-xs-12 col-sm-12 p-3">
               <button
                 className="btn btn-light border me-2"
                 onClick={() => navigate("/cart")}
@@ -169,27 +175,33 @@ function Checkout() {
           </div>
         </div>
         <div
-          className="col-4 "
+          className="col-lg-4 col-md-12 col-sm-12 col-xs-12"
           style={{ overflowY: "auto", maxHeight: "470px" }}
         >
-          <div className="ms-lg-4 mt-4 mt-lg-0" style={{ maxWidth: "320px" }}>
-            <h6 className="mb-3">Tổng</h6>
+          <div className="ms-lg-4 mt-4 mt-lg-0" style={{ maxWidth: "100%" }}>
+            <h6 className=" mb-3">Tổng</h6>
             <div className="d-flex justify-content-between">
               <p className="mb-2">Tổng các sản phẩm</p>
               <p className="mb-2">
-                {totalPrice.toLocaleString("it-IT", {
-                  style: "currency",
-                  currency: "VND",
-                })}
+                <b>
+                  {totalPrice.toLocaleString("it-IT", {
+                    style: "currency",
+                    currency: "VND",
+                  })}
+                </b>
               </p>
             </div>
             <div className="d-flex justify-content-between">
               <p className="mb-2">Phí vận chuyển</p>
-              <p className="mb-2">+ 30.000 VND</p>
+              <p className="mb-2">
+                <b>+ 30.000 VND</b>
+              </p>
             </div>
             <hr />
             <div className="d-flex justify-content-between">
-              <p className="mb-2">Tổng tiền</p>
+              <p className="mb-2">
+                <b>Tổng tiền</b>
+              </p>
               <p className="mb-2 fw-bold" style={{ color: "red" }}>
                 {(totalPrice + 30000).toLocaleString("it-IT", {
                   style: "currency",
@@ -214,24 +226,28 @@ function Checkout() {
                   />
                 </div>
                 <div className="">
-                  <a href="#" className="nav-link">
+                  <Link to={`/product/${cart.product.id}`} className="nav-link">
                     {cart.product.name} <br />
                     <small className="text-muted text-nowrap">
-                      {cart.product.price.toLocaleString("it-IT", {
-                        style: "currency",
-                        currency: "VND",
-                      })}
+                      <b>
+                        {cart.product.price.toLocaleString("it-IT", {
+                          style: "currency",
+                          currency: "VND",
+                        })}
+                      </b>
                     </small>
-                  </a>
+                  </Link>
                   <div className="price text-muted">
                     Tổng tiền:{" "}
-                    {(cart.product.price * cart.quantity).toLocaleString(
-                      "it-IT",
-                      {
-                        style: "currency",
-                        currency: "VND",
-                      }
-                    )}
+                    <b>
+                      {(cart.product.price * cart.quantity).toLocaleString(
+                        "it-IT",
+                        {
+                          style: "currency",
+                          currency: "VND",
+                        }
+                      )}
+                    </b>
                   </div>
                 </div>
               </div>

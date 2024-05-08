@@ -6,6 +6,7 @@ import { axiosClient } from "../../../services/api-service";
 import { toast } from "react-toastify";
 import { getAllOrderOfUser } from "../../../services/cart-service";
 import { cartActions } from "../../../redux/slide/cart-slice";
+import Swal from "sweetalert2/dist/sweetalert2.js";
 
 export default function CheckoutSuccessfully() {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ export default function CheckoutSuccessfully() {
       });
     }
   }, [userInfo.username]);
+
   useEffect(() => {
     const setPaymentOk = async () => {
       const searchParams = new URLSearchParams(window.location.search);
@@ -35,18 +37,38 @@ export default function CheckoutSuccessfully() {
         `http://localhost:8080/user/payment_info/${userInfo.id}`,
         { params: { status: status } }
       );
-      console.log(res.data);
-      
-      if (res.data === "success") {
+      setResultPayment(res.data);
+      if (resultPayment === "success") {
+        dispatch(cartActions.setCartSize(0));
         navigate(`/info`);
-        toast("Thanh toán thành công");
-      } else {
-        if (res.data === "error") {
-          navigate(`/cart`);
-          toast("Thanh toán đã bị gián đoạn hoặc thất bại!Vui lòng thử lại");
-        }
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Thanh toán thành công!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } else if (resultPayment === "paid") {
+        navigate(`/`);
+        dispatch(cartActions.setCartSize(0));
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "Thanh toán thất bại!Đơn hàng này đã được thanh toán!!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      } else if (resultPayment === "error") {
+        navigate(`/cart`);
+        Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "Thanh toán thất bại!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
       }
     };
     setPaymentOk();
-  }, []);
+  }, [resultPayment]);
 }

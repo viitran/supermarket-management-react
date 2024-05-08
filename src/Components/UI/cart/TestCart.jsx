@@ -1,9 +1,14 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getUserInfo } from "../../../redux/slide/user-slice";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllOrderOfUser } from "../../../services/cart-service";
-import { addProductToCart } from "../../../services/product-service";
+import {
+  addProductToCart,
+  removeProductOnCart,
+} from "../../../services/product-service";
+import Swal from "sweetalert2/dist/sweetalert2.js";
+import { cartActions } from "../../../redux/slide/cart-slice";
 
 function CartTest() {
   const [orders, setOrders] = useState();
@@ -11,31 +16,40 @@ function CartTest() {
   const navigate = useNavigate();
   const [totalPrice, setTotalPrice] = useState(0);
   const [displayedProductCount, setDisplayedProductCount] = useState(3);
+  const [staticModal, setStaticModal] = useState(false);
+  const dispatch = useDispatch();
 
-  const handleRemoveProduct = (obj) => {
-    console.log(obj);
-    
-};
-
-  const handleShowMoreProducts = () => {
-    if (displayedProductCount === orders.length) {
-      setDisplayedProductCount(3);
-    } else {
-      setDisplayedProductCount(orders.length);
-    }
+  const handleRemoveProduct = (productId) => {
+    console.log(productId);
+    removeProductOnCart(productId).then(() => {
+     getAllOrderOfUser().then((res)=>{
+      setOrders(res);
+    })
+      console.log(productId + "ok xoa thanh cong");
+    });
   };
 
   useEffect(() => {
     document.title = "Đơn hàng của bạn";
   });
 
-  useEffect(() => {
+  const fetchApi = () => {
     if (orders) {
       const totalPrice = orders.reduce((total, order) => {
         return total + order.product.price * order.quantity;
       }, 0);
       setTotalPrice(totalPrice);
     }
+    getAllOrderOfUser().then((res) => {
+      const size = res.reduce((c, cart) => {
+        return c + cart.quantity;
+      }, 0);
+      dispatch(cartActions.setCartSize(size));
+    });
+  }
+
+  useEffect(() => {
+    fetchApi();
   }, [orders]);
 
   const AddProductToCart = (quantity, product) => {
@@ -72,7 +86,17 @@ function CartTest() {
   };
 
   const handleNavigatePaymentPage = () => {
-    navigate(`/checkout`);
+    if (!orders) {
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "Vui lòng thêm sản phẩm vào giỏ hàng!",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    } else {
+      navigate(`/checkout`);
+    }
   };
 
   if (!orders) return <div>loading...</div>;
@@ -80,26 +104,23 @@ function CartTest() {
 
   return (
     <>
-      <div className="col-12 mt-3">
-        {/* <h5 className="ms-3">Giỏ hàng()</h5> */}
-      </div>
       <hr />
-      <div className="col-12 row p-4">
-        <div className="col-8">
+      <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12 row p-4">
+        <div className="col-lg-8 col-md-8 col-xs-12">
           {displayedProducts.map((o) => (
             <div
-              className="col-12 row mt-3"
+              className="col-lg-12 col-md-12 col-xs-12  row mt-3"
               key={o.id}
               style={{ border: "solid 1px", borderRadius: "7px" }}
             >
-              <div className="col-2 p-3">
+              <div className="col-lg-2 col-md-12 col-xs-12 p-3">
                 <img
                   src={`data:image/jpeg;base64,${o.product.image}`}
                   alt=""
                   style={{ width: "100px", height: "100px" }}
                 />
               </div>
-              <div className="col-10 p-2">
+              <div className="col-lg-10 col-md-11 col-xs-10 p-2">
                 <div className="col-12 row">
                   <div className="col-11">
                     <h4>{o.product.name}</h4>
@@ -108,7 +129,7 @@ function CartTest() {
                     <button
                       className="btn btn-outline-danger d-flex justify-content-center align-items-center"
                       style={{ width: "10px", height: "30px" }}
-                      onClick={() => handleRemoveProduct(o)}
+                      onClick={() => handleRemoveProduct(o.id)}
                     >
                       <img
                         src="/img/HomePage/trash.png"
@@ -167,9 +188,9 @@ function CartTest() {
           ))}
         </div>
 
-        <div className="col-4 p-5">
+        <div className="col-lg-4 col-md-4 col-xs-12 col-sm-12 p-5">
           <div style={{ position: "sticky", top: "100px" }}>
-            <div className="col-12">Thông tin đơn hàng</div>
+            <div className="col-lg-12">Thông tin đơn hàng</div>
             <hr />
             <div className="col-12 row">
               <div className="col-7">Tổng tiền: </div>

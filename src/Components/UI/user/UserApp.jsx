@@ -27,6 +27,10 @@ function UserApp() {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    document.title = "Thông tin cá nhân";
+  });
+
+  useEffect(() => {
     getOrderHistoryUser().then((res) => {
       const data = [...res];
 
@@ -144,8 +148,10 @@ function UserApp() {
               </div>
             </MDBTabsPane>
             <MDBTabsPane open={verticalActive === "tab2"}>
-              <div className="card p-4 mb-0 shadow-0 border">
-                <table class="table table-striped table-hover">
+              <div className="card p-4 mb-0 shadow-0 border"           style={{ overflowY: "auto", maxHeight: "470px" }}
+>
+                <table class="table table-striped table-hover"           
+>
                   <thead>
                     <tr>
                       <th>Ngày tạo đơn</th>
@@ -172,7 +178,8 @@ function UserApp() {
                             currency: "VND",
                           })}
                         </td>
-                        <td>{h.bill.paymentStatus.name}</td>
+                        <td>
+                        <span class="badge badge-success rounded-pill d-inline">{h.bill.paymentStatus.name}</span></td>
                       </tr>
                     ))}
                   </tbody>

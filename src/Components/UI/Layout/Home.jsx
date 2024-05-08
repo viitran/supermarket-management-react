@@ -72,7 +72,7 @@ function Home() {
 
   const handleNavigate = () => {
     navigate(`/collections`);
-  }
+  };
   useEffect(() => {
     findNewProduct();
   }, []);
@@ -82,19 +82,13 @@ function Home() {
   return (
     <>
       <CarouselHome />
-      <div className="col-12 row p-3 text-center">
-        {categories.map((cate, index) => (
-          <div className="col-lg-3 col-md-12 col-sm-12" key={cate.id}>
+      <div className="col-12 col-xs-12 col-sm-12 col-md-12 row p-3 text-center">
+        {categories.map((cate) => (
+          <div className="col-lg-3 " key={cate.id}>
             <button
               className="button-cate"
               onClick={() => handleNavigateCate(cate.id)}
             >
-              {/* <img
-                src={`data:image/jpeg;base64,${cate.image}`}
-                alt=""
-                style={{ width: "50px", height: "50px" }}
-                className="p-1"
-              />{" "} */}
               {cate.name}
             </button>
           </div>
@@ -119,8 +113,6 @@ function Home() {
         </MDBTabsItem>
         <MDBTabsItem>
           <MDBTabsLink
-            // onClick={() => handleBasicClick("tab3")}
-            // active={basicActive === "tab3"}
             onClick={handleNavigate}
           >
             Tất cả sản phẩm
@@ -128,48 +120,50 @@ function Home() {
         </MDBTabsItem>
       </MDBTabs>
 
-      <MDBTabsContent>
+      <MDBTabsContent className="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <MDBTabsPane open={basicActive === "tab1"}>
-
-        <div className="col-12 row">
-            <div className="col-12 row ms-2 justify-content-center text-center">
-              {topProductSelling?.map((t, index) => (
-                <div className="col-2 p-2 box" key={t.id}>
-                  <div>
-                    <img
-                      src={`data:image/jpeg;base64,${t.image}`}
-                      alt=""
-                      style={{ height: "100%", width: "100%" }}
-                    />
-                  </div>
-                  <div
-                    className="mt-3"
-                    style={{ fontSize: "14px", fontWeight: "500" }}
-                  >
-                    {t.name.length > 23
-                      ? `${t.name.slice(0, 23)}...`
-                      : t.name}
-                  </div>
-                  <div>
-                    {new Intl.NumberFormat("vi-VN", {
-                      style: "currency",
-                      currency: "VND",
-                    }).format(t.price)}
-                  </div>
-                  <div className="mt-3">
-                    <button
-                      onClick={() => handleAddProductToCart(t.id)}
-                      className="button-81"
-                      role="button"
+          <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12 row">
+            <div className="col-lg-12 col-md-12 col-sm-12 col-xs-12 row ms-2 justify-content-center text-center">
+              {topProductSelling?.map((t) => (
+                <div
+                  className="col-lg-auto col-md-auto col-xs-auto col-sm-auto p-2 box"
+                  key={t.id}
+                >
+                  <div className="product-info">
+                    <div>
+                      <img
+                        src={`data:image/jpeg;base64,${t.image}`}
+                        alt=""
+                        style={{ height: "100%", width: "100%" }}
+                      />
+                    </div>
+                    <div
+                      className="mt-3"
+                      style={{ fontSize: "14px", fontWeight: "500" }}
                     >
-                      Chi tiết
-                    </button>
+                      {t.name.length > 23
+                        ? `${t.name.slice(0, 23)}...`
+                        : t.name}
+                    </div>
+                    <div>
+                      {new Intl.NumberFormat("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      }).format(t.price)}
+                    </div>
+                    <div className="mt-3">
+                      <button
+                        onClick={() => handleAddProductToCart(t.id)}
+                        className="button-81"
+                      >
+                        Chi tiết
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-
         </MDBTabsPane>
         <MDBTabsPane open={basicActive === "tab2"}>
           <div className="col-12 row">
@@ -211,10 +205,7 @@ function Home() {
             </div>
           </div>
         </MDBTabsPane>
-        <MDBTabsPane open={basicActive === "tab3"}>
-
-                  
-        </MDBTabsPane>
+        <MDBTabsPane open={basicActive === "tab3"}></MDBTabsPane>
       </MDBTabsContent>
 
       <div className="col-12 text-center">

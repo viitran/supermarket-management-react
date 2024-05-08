@@ -6,11 +6,16 @@ import { useAppDispatch } from "../../../redux/redux-hook";
 import { userActions } from './../../../redux/slide/user-slice';
 import { getAllOrderOfUser } from "../../../services/cart-service";
 import { cartActions } from "../../../redux/slide/cart-slice";
+import { useEffect } from 'react';
 
 function Login() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
+  useEffect(() => {
+    document.title = "Đăng nhập";
+  });
+  
   const handleSubmit = (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);

@@ -10,23 +10,25 @@ function CarouselHome() {
 
   return (
     <>
-      <div style={{ backgroundColor: "#CADFF8" }}>
-        <Carousel activeIndex={index} onSelect={handleSelect}>
-          <Carousel.Item>
-            <div className="row">
-              <img src="/img/HomePage/carousel.png" alt="" />
+      <div>
+        <Carousel activeIndex={index} onSelect={handleSelect} >
+          {/* <Carousel.Item>
+            <div className="col-lg-12 col-md-12 col-xs-12 col-sm-12 row">
+              <img src="/img/HomePage/carousel.png" alt="" 
+              // style={{width: "100%",height: "548px"}}
+              />
             </div>
             <Carousel.Caption>
             
             </Carousel.Caption>
-          </Carousel.Item>
+          </Carousel.Item> */}
 
           <Carousel.Item>
             <div className="row">
               <img src="/img/HomePage/carousel2.png" alt="" />
             </div>{" "}
             <Carousel.Caption>
-             
+          
             </Carousel.Caption>
           </Carousel.Item>
 

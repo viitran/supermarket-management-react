@@ -52,8 +52,14 @@ export const getAllProductsThatCanBeDishesForId = async (id) => {
 };
 
 export const removeProductOnCart = async (id) => {
-  const res = await axiosClient.post(`http://localhost:8080/user/remove/${id}`);
-  return res.data;
+  try {
+    const res = await axiosClient.post(
+      `http://localhost:8080/user/remove/${id}`
+    );
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 export const findAllTopSelling = async () => {
