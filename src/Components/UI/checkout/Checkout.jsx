@@ -45,6 +45,7 @@ function Checkout() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setPaymentValue({ ...paymentValue, [name]: value });
+    console.log(paymentValue);
   };
 
   const handlePayment = () => {
@@ -223,6 +224,7 @@ function Checkout() {
                     src={`data:image/jpeg;base64,${cart.product.image}`}
                     style={{ width: "96px", height: "96px" }}
                     className="img-sm rounded border"
+                    alt=""
                   />
                 </div>
                 <div className="">

@@ -314,7 +314,7 @@ function ProductDetail() {
           </div>
         ) : (
           <div className="mt-5 col-12">
-            <h2>Các sản phẩm vừa xem</h2>
+            
           </div>
         )}
       </div>

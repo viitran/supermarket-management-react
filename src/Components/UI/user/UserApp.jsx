@@ -7,25 +7,41 @@ import {
 import { useEffect, useState } from "react";
 import {
   MDBTabs,
+  MDBBtn,
   MDBTabsItem,
   MDBTabsLink,
   MDBTabsContent,
   MDBTabsPane,
   MDBRow,
   MDBCol,
+  MDBModal,
+  MDBModalDialog,
+  MDBModalContent,
+  MDBModalHeader,
+  MDBModalTitle,
+  MDBModalBody,
+  MDBModalFooter,
 } from "mdb-react-ui-kit";
 import { getOrderHistoryUser } from "../../../services/product-service";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { handleLogout } from "../../../services/auth-service";
+import { findAllProductsAfterPayment } from "../../../services/user";
 
 function UserApp() {
   const userInfo = useSelector(getUserInfo);
   const [verticalActive, setVerticalActive] = useState("tab1");
   const [histories, setHistories] = useState();
+  const [products, setProducts] = useState();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [basicModal, setBasicModal] = useState(false);
+  const [selectOrderHistoryId, setSelectOrderHistoryId] = useState();
 
+  const toggleOpen = (id) => {
+    setSelectOrderHistoryId(id);
+    setBasicModal(!basicModal);
+  };
   useEffect(() => {
     document.title = "Thông tin cá nhân";
   });
@@ -60,7 +76,6 @@ function UserApp() {
     if (value === verticalActive) {
       return;
     }
-
     setVerticalActive(value);
   };
 
@@ -148,40 +163,123 @@ function UserApp() {
               </div>
             </MDBTabsPane>
             <MDBTabsPane open={verticalActive === "tab2"}>
-              <div className="card p-4 mb-0 shadow-0 border"           style={{ overflowY: "auto", maxHeight: "470px" }}
->
-                <table class="table table-striped table-hover"           
->
+              <div
+                className="card p-4 mb-0 shadow-0 border"
+                style={{ overflowY: "auto", maxHeight: "470px" }}
+              >
+                <table className="table table-striped table-hover">
                   <thead>
                     <tr>
                       <th>Ngày tạo đơn</th>
-
                       <th>Địa chỉ nhận</th>
-
                       <th>Tổng tiền</th>
-
                       <th>Trạng thái</th>
+                      <th>Hành động</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {histories?.map((h) => (
-                      <tr key={h.id}>
-                        <td>
-                          {" "}
-                          {new Date(h.bill.date).toLocaleDateString()}{" "}
-                          {new Date(h.bill.date).toLocaleTimeString()}
-                        </td>
-                        <td>{h.bill.address}</td>
-                        <td>
-                          {h.bill.total.toLocaleString("it-IT", {
-                            style: "currency",
-                            currency: "VND",
-                          })}
-                        </td>
-                        <td>
-                        <span class="badge badge-success rounded-pill d-inline">{h.bill.paymentStatus.name}</span></td>
-                      </tr>
-                    ))}
+                    {histories?.map((h) => {
+                      const orderDate = new Date(h.bill.date);
+                      const now = new Date();
+                      const timeDiff = Math.floor(
+                        (now - orderDate) / (1000 * 60)
+                      );
+                      let status = "";
+
+                      if (timeDiff <= 30) {
+                        status = "Đang xác thực";
+                      } else if (timeDiff <= 60) {
+                        status = "Đang giao hàng";
+                      } else {
+                        status = "Giao hàng thành công";
+                      }
+
+                      return (
+                        <tr key={h.id}>
+                          <td>
+                            {orderDate.toLocaleDateString()}{" "}
+                            {orderDate.toLocaleTimeString()}
+                          </td>
+                          <td>{h.bill.address}</td>
+                          <td>
+                            {h.bill.total.toLocaleString("it-IT", {
+                              style: "currency",
+                              currency: "VND",
+                            })}
+                          </td>
+                          <td>
+                            <span className="badge badge-success rounded-pill d-inline">
+                              {status}
+                            </span>
+                          </td>
+                          <td>
+                            <MDBBtn
+                              color="info"
+                              onClick={() => toggleOpen(h.bill.id)}
+                            >
+                              Chi tiết
+                            </MDBBtn>
+                            <MDBModal
+                              open={
+                                basicModal && selectOrderHistoryId === h.bill.id
+                              }
+                              onClose={() => setBasicModal(false)}
+                              tabIndex="-1"
+                            >
+                              <MDBModalDialog>
+                                <MDBModalContent>
+                                  <MDBModalHeader>
+                                    <MDBModalTitle>
+                                      Thông tin đơn hàng ngày{" "}
+                                      {orderDate.toLocaleDateString()}
+                                    </MDBModalTitle>
+                                    <MDBBtn
+                                      className="btn-close"
+                                      color="none"
+                                      onClick={toggleOpen}
+                                    ></MDBBtn>
+                                  </MDBModalHeader>
+                                  <MDBModalBody>
+                                    <table className="table table-striped table-hover">
+                                      <thead>
+                                        <tr>
+                                          <th>Sản phẩm</th>
+                                          <th>Tổng tiền</th>
+                                          <th>Địa chỉ nhận</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {h.products.map((po, idx) => (
+                                          <tr key={idx}>
+                                            <td>
+                                              <img
+                                                src={`data:image/jpeg;base64,${po.product.image}`}
+                                                alt=""
+                                                style={{
+                                                  height: "50%",
+                                                  width: "50%",
+                                                }}
+                                              />
+                                            </td>
+                                            <td>
+                                              {new Intl.NumberFormat("vi-VN", {
+                                                style: "currency",
+                                                currency: "VND",
+                                              }).format(po.product.price)}
+                                            </td>
+                                            <td>{h.bill.address}</td>
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                    </table>
+                                  </MDBModalBody>
+                                </MDBModalContent>
+                              </MDBModalDialog>
+                            </MDBModal>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

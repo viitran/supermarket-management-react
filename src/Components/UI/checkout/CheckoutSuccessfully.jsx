@@ -10,9 +10,7 @@ import Swal from "sweetalert2/dist/sweetalert2.js";
 
 export default function CheckoutSuccessfully() {
   const navigate = useNavigate();
-  console.log("a");
   const userInfo = useSelector(getUserInfo);
-  console.log(userInfo);
   const dispatch = useDispatch();
   const [resultPayment, setResultPayment] = useState("");
 

@@ -9,7 +9,7 @@ import Breadcrumb from "react-bootstrap/Breadcrumb";
 const initParam = {
   page: 0,
   size: 100,
-  sortBy: "startDate",
+  sortBy: "start_date",
   sortDirection: "ASC",
   categoryId: -1,
   name: "",
@@ -166,8 +166,8 @@ function Categories() {
               </div>
             </div>
             <div className="col-lg-12 row ms-2 justify-content-center text-center">
-              {displayedProducts.map((product) => (
-                <div className="col-lg-3 col-md-4 col-sm-6 p-2 box" key={product.id}>
+              {displayedProducts.map((product,index) => (
+                <div className="col-lg-3 col-md-4 col-sm-6 p-2 box" key={index}>
                   <div className="product-info">
                     <div>
                       <img
